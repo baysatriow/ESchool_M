@@ -36189,7 +36189,7 @@ readers do not read off random characters that represent icons */
 }
 
 .authentication-bg {
-  background-image: url("../images/auth-bg.jpg");
+  background-image: url("../images/");
   height: 100vh;
   background-size: cover;
   background-position: center;
