@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+    <title>Laporan Gaji Pegawai | Clivax - Admin & Dashboard Template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="Codebucks" name="author" />
+    <link rel="shortcut icon" href="assets/images/favicon.ico">
+
+    <link href="assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/libs/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    
+    <link href="assets/libs/flatpickr/flatpickr.min.css" rel="stylesheet" type="text/css">
+
+    <script src="assets/js/pages/layout.js"></script>
+    <link href="assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
+    <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/libs/simplebar/simplebar.min.css" rel="stylesheet">
+    <link href="assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
+
+    <style>
+        .card-header-actions {
+            display: flex;
+            gap: 0.5rem; 
+            align-items: center;
+            flex-wrap: wrap; 
+        }
+        .filter-form-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 991px) { 
+            .card-header-actions {
+                flex-direction: column;
+                align-items: flex-start;
+                width: 100%;
+            }
+            .card-header-actions .btn,
+            .card-header-actions .dropdown,
+            .card-header-actions .filter-form-group,
+            .card-header-actions .filter-form-group .form-control,
+            .card-header-actions .filter-form-group .btn {
+                margin-top: 0.5rem;
+                width: 100%; 
+            }
+             .card-header-actions .filter-form-group {
+                flex-direction: column;
+             }
+             .card-header-actions .filter-form-group .form-control {
+                margin-bottom: 0.5rem;
+             }
+            .card-header-actions .btn i {
+                margin-right: 0.25rem;
+            }
+        }
+        .table td.text-end, .table th.text-end {
+            text-align: right !important;
+        }
+        .table td.fw-bold {
+            font-weight: 600 !important;
+        }
+        .badge.bg-success-subtle { background-color: var(--bs-success-bg-subtle) !important; color: var(--bs-success-text-emphasis) !important; }
+        .badge.bg-info-subtle { background-color: var(--bs-info-bg-subtle) !important; color: var(--bs-info-text-emphasis) !important; }
+
+    </style>
+
+</head>
+
+<body>
+
+<div id="layout-wrapper">
+
+    <header id="page-topbar">
+       <div class="navbar-header">
+            <div class="navbar-logo-box">
+                <a href="index.html" class="logo logo-dark">
+                    <span class="logo-sm"><img src="assets/images/logo-sm.png" alt="" height="20"></span>
+                    <span class="logo-lg"><img src="assets/images/logo-dark.png" alt="" height="18"></span>
+                </a>
+                <a href="index.html" class="logo logo-light">
+                    <span class="logo-sm"><img src="assets/images/logo-sm.png" alt="" height="20"></span>
+                    <span class="logo-lg"><img src="assets/images/logo-light.png" alt="" height="18"></span>
+                </a>
+                <button type="button" class="btn btn-sm top-icon sidebar-btn" id="sidebar-btn">
+                    <i class="mdi mdi-menu-open align-middle fs-19"></i>
+                </button>
+            </div>
+             <div class="d-flex justify-content-between menu-sm px-3 ms-auto">
+                </div>
+       </div>
+    </header>
+    <div class="sidebar-left">
+        <div data-simplebar class="h-100">
+            <div id="sidebar-menu">
+                <ul class="left-menu list-unstyled" id="side-menu">
+                    <li>
+                        <a href="index.html" class="">
+                            <i class="fas fa-desktop"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                
+                    <li class="menu-title">DATA & LAPORAN</li>
+                     <li class="mm-active"> 
+                        <a href="javascript: void(0);" class="has-arrow active"> <i class="fas fa-table"></i>
+                            <span>Keuangan Sekolah</span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="true"> 
+                            <li><a href="pembayaran-siswa.html"><i class="mdi mdi-checkbox-blank-circle align-middle"></i> Pembayaran Siswa</a></li>
+                            <li><a href="pengeluaran.html"><i class="mdi mdi-checkbox-blank-circle align-middle"></i> Pengeluaran Sekolah</a></li> 
+                            <li><a href="kategori-pengeluaran.html"><i class="mdi mdi-checkbox-blank-circle align-middle"></i> Kategori Pengeluaran</a></li>
+                            <hr class="sidebar-divider">
+                            <li><a href="laporan-keuangan-siswa.html"><i class="mdi mdi-checkbox-blank-circle align-middle"></i> Lap. Keuangan Siswa</a></li>
+                            <li><a href="laporan-tunggakan.html"><i class="mdi mdi-checkbox-blank-circle align-middle"></i> Lap. Tunggakan Siswa</a></li>
+                            <li><a href="laporan-penerimaan.html"><i class="mdi mdi-checkbox-blank-circle align-middle"></i> Lap. Penerimaan Kas</a></li>
+                            <li><a href="laporan-gaji-pegawai.html" class="active"><i class="mdi mdi-checkbox-blank-circle align-middle"></i> Lap. Gaji Pegawai</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="main-content">
+
+        <div class="page-content">
+            <div class="container-fluid">
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box d-flex align-items-center justify-content-between">
+                            <h4 class="mb-sm-0">Laporan Gaji Pegawai</h4>
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0">
+                                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Laporan</a></li>
+                                    <li class="breadcrumb-item active">Gaji Pegawai</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                                <h4 class="card-title mb-md-0 mb-2">Data Pembayaran Gaji Pegawai</h4>
+                                <div class="card-header-actions">
+                                    <div class="filter-form-group me-2">
+                                        <input type="month" class="form-control form-control-sm" id="filter-periode-gaji" value="2025-05">
+                                        <button type="button" class="btn btn-primary btn-sm"><i class="fas fa-search"></i> Filter</button>
+                                    </div>
+                                     <button type="button" class="btn btn-success btn-sm">
+                                        <i class="fas fa-file-excel"></i> Export Excel
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted">Tabel ini menampilkan rincian pembayaran gaji pegawai. Gunakan filter periode untuk melihat data bulan tertentu.</p>
+
+                                <table id="tabelLaporanGajiPegawai" class="table table-hover table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>ID Pegawai</th>
+                                            <th>Nama Pegawai</th>
+                                            <th>Jabatan</th>
+                                            <th>Periode Gaji</th>
+                                            <th>Tgl. Bayar</th>
+                                            <th class="text-end">Gaji Pokok (Rp)</th>
+                                            <th class="text-end">Tunjangan (Rp)</th>
+                                            <th class="text-end">Potongan (Rp)</th>
+                                            <th class="text-end">Gaji Bersih (Rp)</th>
+                                            <th>Status</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>PEG001</td>
+                                            <td>Suparjo Atmojo</td>
+                                            <td>Kepala Sekolah</td>
+                                            <td>Mei 2025</td>
+                                            <td>2025-05-25</td>
+                                            <td class="text-end">7,000,000</td>
+                                            <td class="text-end">1,500,000</td>
+                                            <td class="text-end">250,000</td>
+                                            <td class="text-end fw-bold">8,250,000</td>
+                                            <td><span class="badge rounded-pill bg-success-subtle">Sudah Dibayar</span></td>
+                                            <td>
+                                                <button type="button" class="btn btn-icon btn-sm btn-warning waves-effect waves-light" data-bs-toggle="tooltip" data-bs-placement="top" title="Cetak Slip Gaji"><i class="fas fa-print"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>PEG002</td>
+                                            <td>Siti Aminah</td>
+                                            <td>Guru Matematika</td>
+                                            <td>Mei 2025</td>
+                                            <td>2025-05-25</td>
+                                            <td class="text-end">5,000,000</td>
+                                            <td class="text-end">750,000</td>
+                                            <td class="text-end">100,000</td>
+                                            <td class="text-end fw-bold">5,650,000</td>
+                                            <td><span class="badge rounded-pill bg-success-subtle">Sudah Dibayar</span></td>
+                                             <td>
+                                                <button type="button" class="btn btn-icon btn-sm btn-warning waves-effect waves-light" data-bs-toggle="tooltip" data-bs-placement="top" title="Cetak Slip Gaji"><i class="fas fa-print"></i></button>
+                                            </td>
+                                        </tr>
+                                         <tr>
+                                            <td>3</td>
+                                            <td>PEG003</td>
+                                            <td>Bambang Susilo</td>
+                                            <td>Staf Tata Usaha</td>
+                                            <td>Mei 2025</td>
+                                            <td>2025-05-25</td>
+                                            <td class="text-end">3,500,000</td>
+                                            <td class="text-end">300,000</td>
+                                            <td class="text-end">50,000</td>
+                                            <td class="text-end fw-bold">3,750,000</td>
+                                             <td><span class="badge rounded-pill bg-success-subtle">Sudah Dibayar</span></td>
+                                             <td>
+                                                <button type="button" class="btn btn-icon btn-sm btn-warning waves-effect waves-light" data-bs-toggle="tooltip" data-bs-placement="top" title="Cetak Slip Gaji"><i class="fas fa-print"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>4</td>
+                                            <td>PEG004</td>
+                                            <td>Dewi Lestari</td>
+                                            <td>Guru Bahasa Inggris</td>
+                                            <td>Mei 2025</td>
+                                            <td>2025-05-26</td> <td class="text-end">5,200,000</td>
+                                            <td class="text-end">800,000</td>
+                                            <td class="text-end">120,000</td>
+                                            <td class="text-end fw-bold">5,880,000</td>
+                                            <td><span class="badge rounded-pill bg-info-subtle">Proses Transfer</span></td>
+                                            <td>
+                                                <button type="button" class="btn btn-icon btn-sm btn-warning waves-effect waves-light disabled" data-bs-toggle="tooltip" data-bs-placement="top" title="Cetak Slip Gaji (Belum Selesai)"><i class="fas fa-print"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="6" class="text-end">Total Gaji Periode Ini:</th>
+                                            <th class="text-end fw-bold"></th> <th class="text-end fw-bold"></th> <th class="text-end fw-bold"></th> <th class="text-end fw-bold"></th> <th colspan="2"></th> 
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+                
+                </div>
+            </div>
+        <footer class="footer">
+             <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col-sm-6">
+                        <script>document.write(new Date().getFullYear())</script> © Clivax.
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="text-sm-end d-none d-sm-block">
+                            Crafted with <i class="mdi mdi-heart text-danger"></i> by <a href="http://codebucks.in/" target="_blank" class="text-muted">Codebucks</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+    </div>
+
+<script src="assets/libs/jquery/jquery.min.js"></script>
+<script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="assets/libs/metismenu/metisMenu.min.js"></script>
+<script src="assets/libs/simplebar/simplebar.min.js"></script>
+<script src="assets/libs/node-waves/waves.min.js"></script>
+
+<script src="assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+<script src="assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
+<script src="assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+<script src="assets/libs/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+<script src="assets/libs/jszip/jszip.min.js"></script>
+<script src="assets/libs/pdfmake/build/pdfmake.min.js"></script>
+<script src="assets/libs/pdfmake/build/vfs_fonts.js"></script>
+<script src="assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
+<script src="assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
+<script src="assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+
+<script src="assets/js/app.js"></script>
+
+<script>
+$(document).ready(function() {
+    var table = $('#tabelLaporanGajiPegawai').DataTable({ 
+        "language": {
+            "search": "Cari (Nama, ID):",
+            "lengthMenu": "Tampilkan _MENU_ entri",
+            "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data gaji",
+            "infoEmpty": "Tidak ada data gaji",
+            "infoFiltered": "(difilter dari _MAX_ total data)",
+            "zeroRecords": "Tidak ada data gaji yang cocok ditemukan",
+            "paginate": {
+                "first": "Pertama",
+                "last": "Terakhir",
+                "next": "Berikutnya",
+                "previous": "Sebelumnya"
+            }
+        },
+        responsive: true,
+        "order": [[ 4, "desc" ], [5, "desc"]], // Urutkan Periode Gaji (desc), Tgl Bayar (desc)
+        "columnDefs": [ 
+            { "type": "num-fmt", "targets": [6, 7, 8, 9] }, // Kolom Gaji Pokok s/d Gaji Bersih
+            { "orderable": false, "targets": [11] }    // Kolom Aksi tidak bisa diurutkan
+        ],
+        "footerCallback": function ( row, data, start, end, display ) {
+            var api = this.api(), data;
+ 
+            var intVal = function ( i ) {
+                return typeof i === 'string' ?
+                    i.replace(/[\Rp.,]/g, '')*1 : 
+                    typeof i === 'number' ?
+                    i : 0;
+            };
+
+            var formatNumber = function(num) {
+                return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+            };
+            
+            // Fungsi untuk menghitung total per kolom
+            var calculateColumnTotal = function(columnIndex) {
+                return api
+                    .column(columnIndex, { page: 'current' })
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+            };
+
+            // Hitung total untuk setiap kolom moneter
+            var totalGajiPokok = calculateColumnTotal(6);
+            var totalTunjangan = calculateColumnTotal(7);
+            var totalPotongan = calculateColumnTotal(8);
+            var totalGajiBersih = calculateColumnTotal(9);
+ 
+            // Update footer
+            $( api.column(6).footer() ).html('Rp ' + formatNumber(totalGajiPokok));
+            $( api.column(7).footer() ).html('Rp ' + formatNumber(totalTunjangan));
+            $( api.column(8).footer() ).html('Rp ' + formatNumber(totalPotongan));
+            $( api.column(9).footer() ).html('Rp ' + formatNumber(totalGajiBersih));
+        }
+    });
+
+    // Contoh filter periode (Sederhana, perlu disesuaikan dengan logika backend/filter DataTables yang lebih canggih)
+    $('#filter-periode-gaji').on('change', function() {
+        var periode = $(this).val();
+        // Untuk filter client-side (jika data sudah terload semua):
+        // table.column(4).search(periode ? '^' + periode + '$' : '', true, false).draw();
+        // Untuk filter server-side, Anda perlu mengirimkan nilai periode ini ke server
+        console.log("Filter periode dipilih:", periode);
+        // Implementasikan AJAX call atau reload halaman dengan parameter filter
+    });
+
+
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+});
+</script>
+
+</body>
+
+</html>
