@@ -1,25 +1,27 @@
 <?php
-// deklarasi parameter koneksi database
-$server   = "localhost";
-$username = "root";
-$password = "";
-$database = "";
 
-// koneksi database
-$koneksi = mysqli_connect($server, $username, $password, $database);
+class Database {
+    private $host = 'localhost';
+    private $db_name = 'eschool_rev';
+    private $username = 'root';
+    private $password = '';
+    private $conn;
 
-// cek koneksi
-if (!$koneksi) {
-    die('Koneksi Database Gagal : ');
+    public function getConnection() {
+        $this->conn = null;
+        
+        try {
+            $this->conn = new PDO(
+                "mysql:host=" . $this->host . ";dbname=" . $this->db_name,
+                $this->username,
+                $this->password
+            );
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->conn->exec("set names utf8");
+        } catch(PDOException $exception) {
+            echo "Connection error: " . $exception->getMessage();
+        }
+        
+        return $this->conn;
+    }
 }
-
-(isset($_GET['pg'])) ? $pg = $_GET['pg'] : $pg = '';
-(isset($_GET['ac'])) ? $ac = $_GET['ac'] : $ac = '';
-
-// SETTING WAKTU
-date_default_timezone_set("Asia/Jakarta");
-
-$uri = "http://localhost:8080/ESchool_M";
-
-define('BASEPATH', str_replace("config", "", dirname(__FILE__)));
-$actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
