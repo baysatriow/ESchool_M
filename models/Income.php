@@ -6,33 +6,34 @@ require_once 'helpers/FileUpload.php';
 class Income extends BaseModel {
     protected $table_name = "t_pendapatan";
     
+    public function __construct($db) {
+        parent::__construct($db);
+    }
+    
     public function generateReceiptNumber() {
-        // Format: SDITXXXXXXPDPT where X is random number/letter
-        $prefix = 'SDIT-';
-        $suffix = '-PDPT';
-        $randomPart = '';
+        // Format: PDPT/YYYYMMDD/XXXX where XXXX is sequential number
+        $prefix = 'PDPT/';
+        $date = date('Ymd');
+        $suffix = '/';
         
-        // Generate 6 random characters (numbers and letters)
-        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        for ($i = 0; $i < 6; $i++) {
-            $randomPart .= $characters[rand(0, strlen($characters) - 1)];
-        }
+        // Get last number for today
+        $query = "SELECT no_bukti FROM " . $this->table_name . " 
+                  WHERE no_bukti LIKE :pattern 
+                  ORDER BY no_bukti DESC LIMIT 1";
         
-        $receiptNumber = $prefix . $randomPart . $suffix;
-        
-        // Check if receipt number already exists
-        $query = "SELECT COUNT(*) as count FROM " . $this->table_name . " WHERE no_bukti = :no_bukti";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindValue(':no_bukti', $receiptNumber);
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->execute([':pattern' => $prefix . $date . '%']);
+        $lastReceipt = $stmt->fetchColumn();
         
-        // If exists, generate new one recursively
-        if ($result['count'] > 0) {
-            return $this->generateReceiptNumber();
+        if ($lastReceipt) {
+            // Extract the last 4 digits
+            $lastNumber = intval(substr($lastReceipt, -4));
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 1;
         }
         
-        return $receiptNumber;
+        return $prefix . $date . $suffix . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
     }
     
     public function getById($id) {
@@ -48,7 +49,7 @@ class Income extends BaseModel {
         try {
             $this->conn->beginTransaction();
             
-            // Always auto-generate receipt number (tidak bisa diubah user)
+            // Always auto-generate receipt number
             $income_data['no_bukti'] = $this->generateReceiptNumber();
             
             // Create income record
@@ -172,25 +173,58 @@ class Income extends BaseModel {
                   FROM " . $this->table_name . " i
                   LEFT JOIN m_kategori_pendapatan kp ON i.kategori_id = kp.id
                   LEFT JOIN m_users u ON i.user_id = u.id
-                  ORDER BY i.tanggal DESC";
+                  ORDER BY i.tanggal DESC, i.created_at DESC";
         
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    public function getIncomeDetail($id) {
+    
+    public function getIncomesWithCategoryFiltered($filters = []) {
         $query = "SELECT i.*, kp.nama_kategori, u.nama_lengkap as created_by
                   FROM " . $this->table_name . " i
                   LEFT JOIN m_kategori_pendapatan kp ON i.kategori_id = kp.id
                   LEFT JOIN m_users u ON i.user_id = u.id
+                  WHERE 1=1";
+        
+        $params = [];
+        
+        // Apply filters
+        if (!empty($filters['tanggal_dari'])) {
+            $query .= " AND i.tanggal >= :tanggal_dari";
+            $params[':tanggal_dari'] = $filters['tanggal_dari'];
+        }
+        
+        if (!empty($filters['tanggal_sampai'])) {
+            $query .= " AND i.tanggal <= :tanggal_sampai";
+            $params[':tanggal_sampai'] = $filters['tanggal_sampai'];
+        }
+        
+        if (!empty($filters['kategori_id'])) {
+            $query .= " AND i.kategori_id = :kategori_id";
+            $params[':kategori_id'] = $filters['kategori_id'];
+        }
+        
+        $query .= " ORDER BY i.tanggal DESC, i.created_at DESC";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute($params);
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    public function getIncomeDetail($id) {
+        $query = "SELECT i.*, kp.nama_kategori, u.nama_lengkap as created_by,
+                         DATE_FORMAT(i.tanggal, '%d %M %Y') as tanggal_formatted,
+                         DATE_FORMAT(i.created_at, '%d %M %Y %H:%i:%s') as waktu_transaksi
+                  FROM " . $this->table_name . " i
+                  LEFT JOIN m_kategori_pendapatan kp ON i.kategori_id = kp.id
+                  LEFT JOIN m_users u ON i.user_id = u.id
                   WHERE i.id = :id";
-
         $stmt = $this->conn->prepare($query);
         $stmt->bindValue(':id', $id);
         $stmt->execute();
-
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     
@@ -200,5 +234,89 @@ class Income extends BaseModel {
         $stmt->execute();
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    public function getIncomeSummary($filters = []) {
+        $query = "SELECT 
+                    COUNT(*) as total_transaksi,
+                    SUM(nominal) as total_nominal,
+                    AVG(nominal) as rata_rata_nominal
+                  FROM " . $this->table_name . " i
+                  WHERE 1=1";
+        
+        $params = [];
+        
+        if (!empty($filters['tanggal_dari'])) {
+            $query .= " AND i.tanggal >= :tanggal_dari";
+            $params[':tanggal_dari'] = $filters['tanggal_dari'];
+        }
+        
+        if (!empty($filters['tanggal_sampai'])) {
+            $query .= " AND i.tanggal <= :tanggal_sampai";
+            $params[':tanggal_sampai'] = $filters['tanggal_sampai'];
+        }
+        
+        if (!empty($filters['kategori_id'])) {
+            $query .= " AND i.kategori_id = :kategori_id";
+            $params[':kategori_id'] = $filters['kategori_id'];
+        }
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute($params);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    public function getIncomeSummaryCards($filters = []) {
+        // Get total income and transactions
+        $totalQuery = "SELECT 
+                        COUNT(*) as total_transaksi,
+                        COALESCE(SUM(nominal), 0) as total_pendapatan,
+                        COALESCE(AVG(nominal), 0) as rata_rata_pendapatan
+                       FROM " . $this->table_name . " 
+                       WHERE 1=1";
+        
+        // Get this month's income
+        $monthQuery = "SELECT 
+                        COUNT(*) as transaksi_bulan_ini,
+                        COALESCE(SUM(nominal), 0) as pendapatan_bulan_ini
+                       FROM " . $this->table_name . " 
+                       WHERE MONTH(tanggal) = MONTH(CURRENT_DATE()) 
+                       AND YEAR(tanggal) = YEAR(CURRENT_DATE())";
+        
+        $params = [];
+        
+        // Apply filters if provided
+        if (!empty($filters['tanggal_dari'])) {
+            $totalQuery .= " AND tanggal >= :tanggal_dari";
+            $params[':tanggal_dari'] = $filters['tanggal_dari'];
+        }
+        
+        if (!empty($filters['tanggal_sampai'])) {
+            $totalQuery .= " AND tanggal <= :tanggal_sampai";
+            $params[':tanggal_sampai'] = $filters['tanggal_sampai'];
+        }
+        
+        if (!empty($filters['kategori_id'])) {
+            $totalQuery .= " AND kategori_id = :kategori_id";
+            $params[':kategori_id'] = $filters['kategori_id'];
+        }
+        
+        // Execute total query
+        $totalStmt = $this->conn->prepare($totalQuery);
+        $totalStmt->execute($params);
+        $totalResult = $totalStmt->fetch(PDO::FETCH_ASSOC);
+        
+        // Execute month query
+        $monthStmt = $this->conn->prepare($monthQuery);
+        $monthStmt->execute();
+        $monthResult = $monthStmt->fetch(PDO::FETCH_ASSOC);
+        
+        return [
+            'total_transaksi' => $totalResult['total_transaksi'] ?? 0,
+            'total_pendapatan' => $totalResult['total_pendapatan'] ?? 0,
+            'rata_rata_pendapatan' => $totalResult['rata_rata_pendapatan'] ?? 0,
+            'transaksi_bulan_ini' => $monthResult['transaksi_bulan_ini'] ?? 0,
+            'pendapatan_bulan_ini' => $monthResult['pendapatan_bulan_ini'] ?? 0
+        ];
     }
 }

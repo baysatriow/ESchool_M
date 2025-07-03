@@ -22,6 +22,7 @@ if (!function_exists('asset_path_header')) {
     <meta content="Aplikasi Keuangan Berbasis Website SD IT Ahsanul Fikri" name="description" />
     <meta content="Abdimas Tel-U 2025" name="author" />
     <link rel="shortcut icon" href="assets/images/favicon.png">
+    <link href="<?php echo asset_path_header('assets/libs/select2/css/select2.min.css'); ?>" rel="stylesheet" type="text/css">
     
     <script src="<?php echo asset_path_header('assets/js/pages/layout.js'); ?>"></script>
     <link href="<?php echo asset_path_header('assets/css/bootstrap.min.css'); ?>" id="bootstrap-style" rel="stylesheet" type="text/css" />
@@ -29,7 +30,7 @@ if (!function_exists('asset_path_header')) {
     <link href="<?php echo asset_path_header('assets/libs/simplebar/simplebar.min.css'); ?>" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
     <!-- iziToast CSS -->
-    <link href="assets/libs/izitoast/css/iziToast.min.css" rel="stylesheet" type="text/css" />
+    <link href="<?php echo asset_path_header('assets/libs/izitoast/css/iziToast.min.css'); ?>" rel="stylesheet" type="text/css" />
     
     <link href="<?php echo asset_path_header('assets/css/app.min.css'); ?>" id="app-style" rel="stylesheet" type="text/css" />
 </head>
@@ -84,16 +85,15 @@ if (!function_exists('asset_path_header')) {
                                 <div class="card-body p-0">
                                     <div class="grid-nav grid-nav-flush grid-nav-action grid-nav-no-rounded">
                                         <div class="grid-nav-row">
-                                            <a href="<?php echo Router::url('profile'); ?>" class="grid-nav-item">
-                                                <div class="grid-nav-icon"><i class="far fa-address-card"></i></div>
-                                                <span class="grid-nav-content">Profile</span>
+                                            <a href="<?php echo Router::url('logout'); ?>" class="grid-nav-item">
+                                                <div class="grid-nav-icon"><i class="fas fa-sign-out-alt"></i></div> <span class="grid-nav-content">Keluar Aplikasi</span>
                                             </a>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card-footer card-footer-bordered rounded-0">
+                                <!-- <div class="card-footer card-footer-bordered rounded-0">
                                     <a href="<?php echo Router::url('logout'); ?>" class="btn btn-label-danger">Sign out</a>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>

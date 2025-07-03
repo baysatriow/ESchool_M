@@ -19,34 +19,146 @@
                 </div>
             </div>
 
+            <!-- Filter Section -->
             <div class="row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h4 class="card-title">Daftar Pengeluaran</h4>
-                                <div>
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
-                                        <i class="mdi mdi-plus"></i> Tambah Pengeluaran
-                                    </button>
-                                    <button type="button" class="btn btn-success" onclick="printData()">
-                                        <i class="mdi mdi-printer"></i> Print
-                                    </button>
+                            <h4 class="card-title mb-0">Filter Data</h4>
+                        </div>
+                        <div class="card-body">
+                            <form method="GET" action="<?php echo Router::url('expenses'); ?>" class="row g-3">
+                                <div class="col-md-3">
+                                    <label for="start_date" class="form-label">Tanggal Dari</label>
+                                    <input type="date" class="form-control" id="start_date" name="start_date" value="<?php echo htmlspecialchars($start_date); ?>">
                                 </div>
+                                <div class="col-md-3">
+                                    <label for="end_date" class="form-label">Tanggal Sampai</label>
+                                    <input type="date" class="form-control" id="end_date" name="end_date" value="<?php echo htmlspecialchars($end_date); ?>">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="filter_kategori_id" class="form-label">Kategori</label>
+                                    <select class="form-control" id="filter_kategori_id" name="kategori_id">
+                                        <option value="">Semua Kategori</option>
+                                        <?php foreach ($categories as $category): ?>
+                                        <option value="<?php echo htmlspecialchars($category['id']); ?>" <?php echo ($selected_kategori == $category['id']) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($category['nama_kategori']); ?>
+                                        </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">&nbsp;</label>
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="mdi mdi-filter"></i> Filter
+                                        </button>
+                                        <a href="<?php echo Router::url('expenses'); ?>" class="btn btn-secondary">
+                                            <i class="mdi mdi-refresh"></i> Reset
+                                        </a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-success-subtle">
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <div class="avatar avatar-sm rounded-circle bg-success">
+                                    <i class="mdi mdi-cash-plus mt-1 text-white"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <p class="text-success mb-1">Total Pemasukan</p>
+                                    <h4 class="mb-0">Rp <?php echo number_format($summary['total_pemasukan'] ?? 0, 0, ',', '.'); ?></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-danger-subtle">
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <div class="avatar avatar-sm rounded-circle bg-danger">
+                                    <i class="mdi mdi-cash-minus mt-1 text-white"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <p class="text-danger mb-1">Total Pengeluaran</p>
+                                    <h4 class="mb-0">Rp <?php echo number_format($summary['total_pengeluaran'] ?? 0, 0, ',', '.'); ?></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card <?php echo (($summary['saldo_tersisa'] ?? 0) >= 0) ? 'bg-primary-subtle' : 'bg-warning-subtle'; ?>">
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <div class="avatar avatar-sm rounded-circle <?php echo (($summary['saldo_tersisa'] ?? 0) >= 0) ? 'bg-primary' : 'bg-warning'; ?>">
+                                    <i class="mdi mdi-wallet mt-1 text-white"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <p class="<?php echo (($summary['saldo_tersisa'] ?? 0) >= 0) ? 'text-primary' : 'text-warning'; ?> mb-1">Saldo Tersisa</p>
+                                    <h4 class="mb-0">
+                                        Rp <?php echo number_format($summary['saldo_tersisa'] ?? 0, 0, ',', '.'); ?>
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-info-subtle">
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <div class="avatar avatar-sm rounded-circle bg-info">
+                                    <i class="mdi mdi-calendar-month mt-1 text-white"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <p class="text-info mb-1">Pengeluaran Bulan Ini</p>
+                                    <h4 class="mb-0">Rp <?php echo number_format($summary['pengeluaran_bulan_ini'] ?? 0, 0, ',', '.'); ?></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4 class="card-title mb-0">Daftar Pengeluaran</h4>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
+                                    <i class="mdi mdi-plus"></i> Tambah Pengeluaran
+                                </button>
+                                <button type="button" class="btn btn-success" onclick="exportToExcel()">
+                                    <i class="mdi mdi-file-excel"></i> Export Excel
+                                </button>
+                                <!-- <button type="button" class="btn btn-info" onclick="printData()">
+                                    <i class="mdi mdi-printer"></i> Print
+                                </button> -->
                             </div>
                         </div>
                         <div class="card-body">
                             <table id="datatable" class="table table-hover table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
+                                        <th width="5%">No</th>
                                         <th>Tanggal</th>
                                         <th>No. Bukti</th>
                                         <th>Kategori</th>
                                         <th>Keterangan</th>
                                         <th>Nominal</th>
+                                        <th>Bukti Foto</th>
                                         <th>Dibuat Oleh</th>
-                                        <th>Aksi</th>
+                                        <th width="20%">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -54,18 +166,35 @@
                                     <tr>
                                         <td><?php echo $index + 1; ?></td>
                                         <td><?php echo date('d/m/Y', strtotime($row['tanggal'])); ?></td>
-                                        <td><?php echo htmlspecialchars($row['no_bukti']); ?></td>
+                                        <td><span class="badge bg-danger"><?php echo htmlspecialchars($row['no_bukti'] ?? '-'); ?></span></td>
                                         <td><?php echo htmlspecialchars($row['nama_kategori'] ?? '-'); ?></td>
-                                        <td><?php echo htmlspecialchars($row['keterangan']); ?></td>
-                                        <td>Rp <?php echo number_format($row['nominal'], 0, ',', '.'); ?></td>
+                                        <td><?php echo htmlspecialchars($row['keterangan'] ?? ''); ?></td>
+                                        <td class="text-danger fw-bold">Rp <?php echo number_format($row['nominal'] ?? 0, 0, ',', '.'); ?></td>
+                                        <td>
+                                            <?php if (!empty($row['bukti_foto'])): ?>
+                                                <a href="javascript:void(0);" onclick="showImagePreview('uploads/expense/<?php echo htmlspecialchars($row['bukti_foto']); ?>')">
+                                                    <img src="uploads/expense/<?php echo htmlspecialchars($row['bukti_foto']); ?>" alt="Bukti Foto" width="50" class="img-thumbnail">
+                                                </a>
+                                            <?php else: ?>
+                                                <span class="text-muted">Tidak Ada</span>
+                                            <?php endif; ?>
+                                        </td>
                                         <td><?php echo htmlspecialchars($row['created_by'] ?? '-'); ?></td>
                                         <td>
-                                            <button type="button" class="btn btn-sm btn-warning" onclick="editExpense(<?php echo htmlspecialchars(json_encode($row)); ?>)">
-                                                <i class="mdi mdi-pencil"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-danger" onclick="deleteExpense(<?php echo $row['id']; ?>)">
-                                                <i class="mdi mdi-delete"></i>
-                                            </button>
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-sm btn-info" onclick="showDetail(<?php echo htmlspecialchars(json_encode($row), ENT_QUOTES, 'UTF-8'); ?>)" title="Detail">
+                                                    <i class="mdi mdi-eye"></i>
+                                                </button>
+                                                <a href="<?php echo Router::url('expenses/receipt?expense_id=' . ($row['id'] ?? '')); ?>" class="btn btn-sm btn-success" title="Cetak Kuitansi" target="_blank">
+                                                    <i class="mdi mdi-printer"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-warning" onclick="editExpense(<?php echo htmlspecialchars(json_encode($row), ENT_QUOTES, 'UTF-8'); ?>)" title="Edit">
+                                                    <i class="mdi mdi-pencil"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteExpense(<?php echo ($row['id'] ?? 'null'); ?>, '<?php echo htmlspecialchars($row['no_bukti'] ?? $row['nama_kategori'] ?? '', ENT_QUOTES, 'UTF-8'); ?>')" title="Hapus">
+                                                    <i class="mdi mdi-delete"></i>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                     <?php endforeach; ?>
@@ -83,60 +212,319 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addModalLabel">Tambah Pengeluaran</h5>
+                    <h5 class="modal-title" id="addModalLabel">Form Tambah Pengeluaran</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form method="POST" action="<?php echo Router::url('expenses/create'); ?>">
+                <form method="POST" action="<?php echo Router::url('expenses/create'); ?>" enctype="multipart/form-data">
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="tanggal" class="form-label">Tanggal</label>
+                            <label for="tanggal" class="form-label">Tanggal <span class="text-danger">*</span></label>
                             <input type="date" class="form-control" id="tanggal" name="tanggal" value="<?php echo date('Y-m-d'); ?>" required>
                         </div>
                         <div class="mb-3">
-                            <label for="no_bukti" class="form-label">No. Bukti</label>
-                            <input type="text" class="form-control" id="no_bukti" name="no_bukti" placeholder="Otomatis jika kosong">
-                        </div>
-                        <div class="mb-3">
-                            <label for="kategori_id" class="form-label">Kategori</label>
-                            <select class="form-control" id="kategori_id" name="kategori_id" required>
+                            <label for="kategori_id" class="form-label">Kategori <span class="text-danger">*</span></label>
+                            <select class="form-control select2-modal" id="kategori_id" name="kategori_id" required>
                                 <option value="">Pilih Kategori</option>
-                                <!-- Options will be populated via PHP -->
+                                <?php foreach ($categories as $category): ?>
+                                <option value="<?php echo htmlspecialchars($category['id']); ?>"><?php echo htmlspecialchars($category['nama_kategori']); ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="keterangan" class="form-label">Keterangan</label>
+                            <label for="keterangan" class="form-label">Keterangan <span class="text-danger">*</span></label>
                             <textarea class="form-control" id="keterangan" name="keterangan" rows="3" required></textarea>
                         </div>
                         <div class="mb-3">
-                            <label for="nominal" class="form-label">Nominal</label>
+                            <label for="nominal" class="form-label">Nominal <span class="text-danger">*</span></label>
                             <input type="number" class="form-control" id="nominal" name="nominal" min="0" step="1000" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bukti_foto" class="form-label">Bukti Foto (Opsional)</label>
+                            <input type="file" class="form-control" id="bukti_foto" name="bukti_foto" accept="image/*">
+                            <small class="form-text text-muted">Format: JPG, JPEG, PNG, GIF. Maksimal 5MB</small>
+                            <img id="preview_foto_add" src="#" alt="Preview Foto" style="max-width: 100px; margin-top: 10px; display: none;" class="img-thumbnail">
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
+                        <button type="submit" class="btn btn-primary">Simpan Data</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-<?php 
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Form Edit Pengeluaran</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" action="<?php echo Router::url('expenses/edit'); ?>" enctype="multipart/form-data">
+                    <input type="hidden" name="id" id="edit_id">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="edit_no_bukti" class="form-label">No. Bukti</label>
+                            <input type="text" class="form-control" id="edit_no_bukti" disabled readonly style="background-color: #f8f9fa;">
+                            <small class="form-text text-muted">No. bukti tidak dapat diubah</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_tanggal" class="form-label">Tanggal <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="edit_tanggal" name="tanggal" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_kategori_id" class="form-label">Kategori <span class="text-danger">*</span></label>
+                            <select class="form-control select2-modal" id="edit_kategori_id" name="kategori_id" required>
+                                <option value="">Pilih Kategori</option>
+                                <?php foreach ($categories as $category): ?>
+                                <option value="<?php echo htmlspecialchars($category['id']); ?>"><?php echo htmlspecialchars($category['nama_kategori']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_keterangan" class="form-label">Keterangan <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="edit_keterangan" name="keterangan" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_nominal" class="form-label">Nominal <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="edit_nominal" name="nominal" min="0" step="1000" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_bukti_foto" class="form-label">Bukti Foto</label>
+                            <input type="file" class="form-control" id="edit_bukti_foto" name="bukti_foto" accept="image/*">
+                            <small class="form-text text-muted">Kosongkan jika tidak ingin mengubah foto</small>
+                            <div id="current_photo_container" style="margin-top: 10px;">
+                                <p id="no_photo_text" style="display: none;" class="text-muted mb-0">Tidak ada foto saat ini</p>
+                                <a href="javascript:void(0);" id="current_photo_link" style="display: none;" onclick="showImagePreview(this.querySelector('img').src)">
+                                    <img id="current_photo" src="#" alt="Foto Saat Ini" style="max-width: 100px;" class="img-thumbnail">
+                                </a>
+                            </div>
+                            <img id="preview_foto_edit" src="#" alt="Preview Foto Baru" style="max-width: 100px; margin-top: 10px; display: none;" class="img-thumbnail">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailModalLabel">Detail Pengeluaran</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Tanggal:</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext" id="detail_tanggal"></p>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">No. Bukti:</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext"><span id="detail_no_bukti" class="badge bg-danger"></span></p>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Kategori:</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext" id="detail_kategori"></p>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Keterangan:</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext" id="detail_keterangan"></p>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Nominal:</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext text-danger fw-bold" id="detail_nominal"></p>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Dibuat Oleh:</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext" id="detail_created_by"></p>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Bukti Foto:</label>
+                        <div class="col-sm-9">
+                            <div id="detail_foto"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <a href="#" id="detail_receipt_link" class="btn btn-success" target="_blank">
+                        <i class="mdi mdi-printer"></i> Cetak Kuitansi
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Preview Modal -->
+    <div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-labelledby="imagePreviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imagePreviewModalLabel">Pratinjau Gambar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modal_image_preview" src="/placeholder.svg" class="img-fluid" alt="Pratinjau Gambar" style="max-width: 100%; height: auto;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php
+// PHP block for custom_js
 $custom_js = "
     $(document).ready(function() {
-        $('#datatable').DataTable({
-            responsive: true,
-            language: {
-                url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
-            }
+        if (typeof $.fn.DataTable !== 'undefined') {
+            $('#datatable').DataTable({
+                responsive: true,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
+                },
+                columnDefs: [
+                    { responsivePriority: 1, targets: 0 },    // No
+                    { responsivePriority: 2, targets: 1 },    // Tanggal
+                    { responsivePriority: 3, targets: 4 },    // Keterangan
+                    { responsivePriority: 4, targets: 5 },    // Nominal
+                    { responsivePriority: 5, targets: -1 },   // Aksi (last column)
+                    { responsivePriority: 6, targets: 3 },    // Kategori
+                    { responsivePriority: 7, targets: 2 },    // No. Bukti
+                    { responsivePriority: 8, targets: 7 },    // Dibuat Oleh
+                    { responsivePriority: 9, targets: 6 }     // Bukti Foto
+                ]
+            });
+        }
+
+        // Initialize Select2 for category dropdowns in modals
+        $('#kategori_id').select2({
+            dropdownParent: $('#addModal'),
+            placeholder: 'Pilih Kategori',
+            allowClear: true,
+            width: '100%'
+        });
+
+        $('#edit_kategori_id').select2({
+            dropdownParent: $('#editModal'),
+            placeholder: 'Pilih Kategori',
+            allowClear: true,
+            width: '100%'
+        });
+
+        // Initialize Select2 for filter kategori dropdown
+        $('#filter_kategori_id').select2({
+            placeholder: 'Semua Kategori',
+            allowClear: true,
+            width: '100%'
+        });
+
+        // Preview image for Add Modal
+        $('#bukti_foto').change(function() {
+            previewImageToElement(this, 'preview_foto_add');
+        });
+
+        // Preview image for Edit Modal
+        $('#edit_bukti_foto').change(function() {
+            previewImageToElement(this, 'preview_foto_edit');
         });
     });
-    
-    function editExpense(expense) {
-        // Implementation for edit modal
+
+    // Function to preview image in an <img> element
+    function previewImageToElement(input, previewId) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#' + previewId).attr('src', e.target.result);
+                $('#' + previewId).css('display', 'block');
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            $('#' + previewId).attr('src', '#').css('display', 'none');
+        }
     }
     
-    function deleteExpense(id) {
+    // Function to show image in a dedicated modal (gallery-like)
+    function showImagePreview(imageUrl) {
+        $('#modal_image_preview').attr('src', imageUrl);
+        $('#imagePreviewModal').modal('show');
+    }
+
+    function editExpense(expense) {
+        $('#edit_id').val(expense.id);
+        $('#edit_tanggal').val(expense.tanggal || ''); // Use empty string for date input if null
+        $('#edit_no_bukti').val(expense.no_bukti || '-');
+        
+        // Set Select2 value for edit_kategori_id and trigger change
+        $('#edit_kategori_id').val(expense.kategori_id || '').trigger('change');
+        
+        $('#edit_keterangan').val(expense.keterangan || '');
+        $('#edit_nominal').val(expense.nominal || 0);
+        // Handle current photo display in edit modal
+        if (expense.bukti_foto) {
+            var fullPath = 'uploads/expense/' + expense.bukti_foto;
+            $('#current_photo').attr('src', fullPath);
+            // Corrected string concatenation: PHP string ends, JS variable is inserted, PHP string resumes
+            $('#current_photo_link').attr('onclick', 'showImagePreview(\'' + fullPath + '\')');
+            $('#current_photo_link').css('display', 'block');
+            $('#no_photo_text').css('display', 'none');
+        } else {
+            $('#current_photo').attr('src', '#');
+            $('#current_photo_link').css('display', 'none');
+            $('#no_photo_text').css('display', 'block');
+        }
+        
+        // Reset new photo preview
+        $('#preview_foto_edit').attr('src', '#').css('display', 'none');
+        $('#editModal').modal('show');
+    }
+
+    function showDetail(expense) {
+        // Format tanggal ke DD/MM/YYYY
+        const dateObj = new Date(expense.tanggal);
+        const formattedDate = dateObj.toLocaleDateString('id-ID', {day: '2-digit', month: '2-digit', year: 'numeric'});
+        $('#detail_tanggal').text(formattedDate);
+        
+        // Use .html() to set content including badge HTML
+        $('#detail_no_bukti').closest('p').html('<span id=\"detail_no_bukti\" class=\"badge bg-danger\">' + (expense.no_bukti || '-') + '</span>');
+        $('#detail_kategori').text(expense.nama_kategori || '-');
+        $('#detail_keterangan').text(expense.keterangan || '-');
+        $('#detail_nominal').text('Rp ' + Number(expense.nominal || 0).toLocaleString('id-ID'));
+        $('#detail_created_by').text(expense.created_by || '-');
+
+        // Set receipt link - Corrected to use string concatenation
+        $('#detail_receipt_link').attr('href', '" . Router::url('expenses/receipt') . "?expense_id=' + (expense.id || '') );
+
+        var fotoHtml = '';
+        if (expense.bukti_foto) {
+            var fullPath = 'uploads/expense/' + expense.bukti_foto;
+            fotoHtml = '<a href=\"javascript:void(0);\" onclick=\"showImagePreview(\'' + fullPath + '\')\"><img src=\"' + fullPath + '\" alt=\"Bukti Foto\" class=\"img-fluid img-thumbnail\" style=\"max-width: 200px;\"></a>';
+        } else {
+            fotoHtml = '<span class=\"text-muted\">Tidak ada foto</span>';
+        }
+        $('#detail_foto').html(fotoHtml);
+        $('#detailModal').modal('show');
+    }
+    
+    function deleteExpense(id, no_bukti) {
         iziToast.question({
             timeout: 20000,
             close: false,
@@ -145,7 +533,7 @@ $custom_js = "
             id: 'question',
             zindex: 999,
             title: 'Konfirmasi',
-            message: 'Apakah Anda yakin ingin menghapus data pengeluaran ini?',
+            message: 'Apakah Anda yakin ingin menghapus pengeluaran dengan No. Bukti \'' + no_bukti + '\'?',
             position: 'center',
             buttons: [
                 ['<button><b>Ya, Hapus</b></button>', function (instance, toast) {
@@ -165,10 +553,26 @@ $custom_js = "
         });
     }
     
+    function exportToExcel()  {
+        // Get current filter values
+        var start_date = $('#start_date').val();
+        var end_date = $('#end_date').val();
+        var kategori_id = $('#filter_kategori_id').val();
+        
+        // Build export URL with current filters
+        var exportUrl = '" . Router::url('expenses') . "?export=excel';
+        if (start_date) exportUrl += '&start_date=' + start_date;
+        if (end_date) exportUrl += '&end_date=' + end_date;
+        if (kategori_id) exportUrl += '&kategori_id=' + kategori_id;
+        
+        // Open export URL
+        window.open(exportUrl, '_blank');
+    }
+    
     function printData() {
         window.print();
     }
 ";
 
-include 'includes/footer.php'; 
+include 'includes/footer.php';
 ?>

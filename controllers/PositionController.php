@@ -29,13 +29,18 @@ class PositionController extends BaseController {
     public function create() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $position = new Position($this->db);
-            
+            $nama_jabatan = trim($_POST['nama_jabatan']);
             $data = [
                 'nama_jabatan' => trim($_POST['nama_jabatan']),
                 'keterangan' => trim($_POST['keterangan']) ?: null
             ];
             
             try {
+                if ($position->isExists($nama_jabatan)) {
+                    $this->redirect('positions', 'Nama jabatan ' . $nama_jabatan . ' sudah ada! Silakan gunakan nama jabatan yang berbeda.', 'error');
+                    return;
+                }
+
                 $result = $position->create($data);
                 if ($result) {
                     $this->redirect('positions', 'Data jabatan berhasil ditambahkan!', 'success');
@@ -51,7 +56,7 @@ class PositionController extends BaseController {
     public function edit() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $position = new Position($this->db);
-            
+            $nama_jabatan = trim($_POST['nama_jabatan']);
             $id = $_POST['id'];
             $data = [
                 'nama_jabatan' => trim($_POST['nama_jabatan']),
@@ -59,6 +64,11 @@ class PositionController extends BaseController {
             ];
             
             try {
+                if ($position->isExists($nama_jabatan, $id)) {
+                    $this->redirect('positions', 'Nama jabatan ' . $nama_jabatan . ' sudah ada! Silakan gunakan nama jabatan yang berbeda.', 'error');
+                    return;
+                }
+
                 $result = $position->update($id, $data);
                 if ($result) {
                     $this->redirect('positions', 'Data jabatan berhasil diperbarui!', 'success');

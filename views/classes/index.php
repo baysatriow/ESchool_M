@@ -28,10 +28,7 @@
                                 <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addModal">
                                     <i class="mdi mdi-plus"></i> Tambah Kelas
                                 </button>
-                                <button type="button" class="btn btn-success" onclick="printData()">
-                                    <i class="mdi mdi-printer"></i> Print
-                                </button>
-                            </div>
+                                </div>
                         </div>
                         <div class="card-body">
                             <table id="datatable" class="table table-hover table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -50,16 +47,32 @@
                                     <tr>
                                         <td><?php echo $index + 1; ?></td>
                                         <td><?php echo htmlspecialchars($row['nama_kelas']); ?></td>
-                                        <td><?php echo $row['tingkat']; ?></td>
-                                        <td><?php echo $row['kapasitas'] ?? 30; ?></td>
+                                        <td>
+                                        <?php if (($row['nama_kelas']) == "ALUMNI" || ($row['nama_kelas']) == "MUTASI"){?>
+                                            -
+                                        <?php } else {?>
+                                            <?php echo $row['tingkat']; ?>
+                                        <?php }?>
+                                        </td>
+                                        <td>
+                                        <?php if (($row['nama_kelas']) == "ALUMNI" || ($row['nama_kelas']) == "MUTASI"){?>
+                                            -
+                                        <?php } else {?>
+                                            <?php echo $row['kapasitas']; ?>
+                                        <?php }?>
+                                        </td>
                                         <td><?php echo $row['jumlah_siswa']; ?></td>
                                         <td>
-                                            <button type="button" class="btn btn-sm btn-warning" onclick="editClass(<?php echo htmlspecialchars(json_encode($row)); ?>)">
-                                                <i class="mdi mdi-pencil"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-danger" onclick="deleteClass(<?php echo $row['id']; ?>)">
-                                                <i class="mdi mdi-delete"></i>
-                                            </button>
+                                            <?php if (($row['nama_kelas']) == "ALUMNI" || ($row['nama_kelas']) == "MUTASI"){?>
+                                                -
+                                            <?php } else {?>
+                                                <button type="button" class="btn btn-sm btn-warning" onclick="editClass(<?php echo htmlspecialchars(json_encode($row)); ?>)">
+                                                    <i class="mdi mdi-pencil"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteClass(<?php echo $row['id']; ?>)">
+                                                    <i class="mdi mdi-delete"></i>
+                                                </button>
+                                            <?php }?>
                                         </td>
                                     </tr>
                                     <?php endforeach; ?>
@@ -160,12 +173,29 @@ $custom_js = "
                 url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
             }
         });
+        
+        // Initialize Select2 for add modal's 'tingkat' dropdown
+        $('#tingkat').select2({
+            dropdownParent: $('#addModal'),
+            placeholder: 'Pilih Tingkat',
+            allowClear: true,
+            width: '100%'
+        });
+
+        // Initialize Select2 for edit modal's 'tingkat' dropdown
+        $('#edit_tingkat').select2({
+            dropdownParent: $('#editModal'),
+            placeholder: 'Pilih Tingkat',
+            allowClear: true,
+            width: '100%'
+        });
     });
     
     function editClass(classData) {
         $('#edit_id').val(classData.id);
         $('#edit_nama_kelas').val(classData.nama_kelas);
-        $('#edit_tingkat').val(classData.tingkat);
+        // Set value for Select2 dropdown and trigger change to update display
+        $('#edit_tingkat').val(classData.tingkat).trigger('change');
         $('#edit_kapasitas').val(classData.kapasitas);
         $('#editModal').modal('show');
     }

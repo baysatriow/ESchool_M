@@ -23,13 +23,13 @@
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h4 class="card-title mb-0">Daftar Pegawai</h4>
-                            <div class="d-flex">
-                                <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addModal">
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
                                     <i class="mdi mdi-plus"></i> Tambah Pegawai
                                 </button>
-                                <button type="button" class="btn btn-success" onclick="printData()">
+                                <!-- <button type="button" class="btn btn-success" onclick="printData()">
                                     <i class="mdi mdi-printer"></i> Print
-                                </button>
+                                </button> -->
                             </div>
                         </div>
                         <div class="card-body">
@@ -37,7 +37,7 @@
                                 <thead>
                                     <tr>
                                         <th width="5%">No</th>
-                                        <th>NIP</th>
+                                        <th>NIY</th>
                                         <th>Nama Lengkap</th>
                                         <th>Jenis Kelamin</th>
                                         <th>Jabatan</th>
@@ -51,44 +51,44 @@
                                     <?php foreach ($employees as $index => $row): ?>
                                     <tr>
                                         <td><?php echo $index + 1; ?></td>
-                                        <td><?php echo htmlspecialchars($row['nip']); ?></td>
-                                        <td><?php echo htmlspecialchars($row['nama_lengkap']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['nip'] ?? '-'); ?></td>
+                                        <td><?php echo htmlspecialchars($row['nama_lengkap'] ?? '-'); ?></td>
                                         <td>
                                             <?php
-                                                $gender_text = '';
-                                                $gender_badge_class = '';
-                                                if ($row['jenis_kelamin'] == 'L') {
-                                                    $gender_text = 'Laki-laki';
-                                                    $gender_badge_class = 'primary'; // Warna sesuai Data Siswa
-                                                } elseif ($row['jenis_kelamin'] == 'P') {
-                                                    $gender_text = 'Perempuan';
-                                                    $gender_badge_class = 'warning'; // Menggunakan warning sebagai pengganti 'pink'
-                                                } else {
-                                                    $gender_text = 'Tidak Diketahui';
-                                                    $gender_badge_class = 'secondary';
-                                                }
+                                            $gender_text = '';
+                                            $gender_badge_class = '';
+                                            if (($row['jenis_kelamin'] ?? '') == 'L') {
+                                                $gender_text = 'Laki-laki';
+                                                $gender_badge_class = 'primary';
+                                            } elseif (($row['jenis_kelamin'] ?? '') == 'P') {
+                                                $gender_text = 'Perempuan';
+                                                $gender_badge_class = 'warning'; // Using warning for "pink" substitute
+                                            } else {
+                                                $gender_text = 'Tidak Diketahui';
+                                                $gender_badge_class = 'secondary';
+                                            }
                                             ?>
                                             <span class="badge bg-<?php echo $gender_badge_class; ?>">
                                                 <?php echo $gender_text; ?>
                                             </span>
                                         </td>
                                         <td><?php echo htmlspecialchars($row['nama_jabatan'] ?? '-'); ?></td>
-                                        <td><?php echo htmlspecialchars($row['no_telepon']); ?></td>
-                                        <td><?php echo htmlspecialchars($row['email']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['no_telepon'] ?? '-'); ?></td>
+                                        <td><?php echo htmlspecialchars($row['email'] ?? '-'); ?></td>
                                         <td>
-                                            <span class="badge badge-<?php echo $row['status'] == 'aktif' ? 'success' : 'secondary'; ?>">
-                                                <?php echo ucfirst($row['status']); ?>
+                                            <span class="badge bg-<?php echo (($row['status'] ?? '') == 'aktif') ? 'success' : 'secondary'; ?>">
+                                                <?php echo ucfirst($row['status'] ?? '-'); ?>
                                             </span>
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <a href="<?php echo Router::url('employees/detail?id=' . $row['id']); ?>" class="btn btn-sm btn-info" title="Detail">
+                                                <a href="<?php echo Router::url('employees/detail?id=' . ($row['id'] ?? '')); ?>" class="btn btn-sm btn-info" title="Detail">
                                                     <i class="mdi mdi-eye"></i>
                                                 </a>
-                                                <button type="button" class="btn btn-sm btn-warning" onclick="editEmployee(<?php echo htmlspecialchars(json_encode($row)); ?>)" title="Edit">
+                                                <button type="button" class="btn btn-sm btn-warning" onclick="editEmployee(<?php echo htmlspecialchars(json_encode($row), ENT_QUOTES, 'UTF-8'); ?>)" title="Edit">
                                                     <i class="mdi mdi-pencil"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteEmployee(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['nama_lengkap']); ?>')" title="Hapus">
+                                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteEmployee(<?php echo ($row['id'] ?? 'null'); ?>, '<?php echo htmlspecialchars($row['nama_lengkap'] ?? '', ENT_QUOTES, 'UTF-8'); ?>')" title="Hapus">
                                                     <i class="mdi mdi-delete"></i>
                                                 </button>
                                             </div>
@@ -108,7 +108,7 @@
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addModalLabel">Tambah Pegawai</h5>
+                    <h5 class="modal-title" id="addModalLabel">Form Tambah Pegawai</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="POST" action="<?php echo Router::url('employees/create'); ?>">
@@ -141,10 +141,10 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="jabatan_id" class="form-label">Jabatan <span class="text-danger">*</span></label>
-                                    <select class="form-control" id="jabatan_id" name="jabatan_id" required>
+                                    <select class="form-control select2-modal" id="jabatan_id" name="jabatan_id" required>
                                         <option value="">Pilih Jabatan</option>
                                         <?php foreach ($positions as $position): ?>
-                                        <option value="<?php echo $position['id']; ?>"><?php echo htmlspecialchars($position['nama_jabatan']); ?></option>
+                                        <option value="<?php echo htmlspecialchars($position['id']); ?>"><?php echo htmlspecialchars($position['nama_jabatan']); ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -182,10 +182,10 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="user_id" class="form-label">Link ke User</label>
-                                    <select class="form-control" id="user_id" name="user_id">
+                                    <select class="form-control select2-modal" id="user_id" name="user_id">
                                         <option value="">Pilih User (Opsional)</option>
                                         <?php foreach ($users as $user): ?>
-                                        <option value="<?php echo $user['id']; ?>"><?php echo htmlspecialchars($user['username'] . ' - ' . $user['nama_lengkap']); ?></option>
+                                        <option value="<?php echo htmlspecialchars($user['id']); ?>"><?php echo htmlspecialchars($user['username'] . ' - ' . $user['nama_lengkap']); ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -194,7 +194,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
+                        <button type="submit" class="btn btn-primary">Simpan Data</button>
                     </div>
                 </form>
             </div>
@@ -205,7 +205,7 @@
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Edit Pegawai</h5>
+                    <h5 class="modal-title" id="editModalLabel">Form Edit Pegawai</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="POST" action="<?php echo Router::url('employees/edit'); ?>">
@@ -239,10 +239,10 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="edit_jabatan_id" class="form-label">Jabatan <span class="text-danger">*</span></label>
-                                    <select class="form-control" id="edit_jabatan_id" name="jabatan_id" required>
+                                    <select class="form-control select2-modal" id="edit_jabatan_id" name="jabatan_id" required>
                                         <option value="">Pilih Jabatan</option>
                                         <?php foreach ($positions as $position): ?>
-                                        <option value="<?php echo $position['id']; ?>"><?php echo htmlspecialchars($position['nama_jabatan']); ?></option>
+                                        <option value="<?php echo htmlspecialchars($position['id']); ?>"><?php echo htmlspecialchars($position['nama_jabatan']); ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -289,10 +289,10 @@
                             <div class="col-md-3">
                                 <div class="mb-3">
                                     <label for="edit_user_id" class="form-label">Link ke User</label>
-                                    <select class="form-control" id="edit_user_id" name="user_id">
+                                    <select class="form-control select2-modal" id="edit_user_id" name="user_id">
                                         <option value="">Pilih User (Opsional)</option>
                                         <?php foreach ($users as $user): ?>
-                                        <option value="<?php echo $user['id']; ?>"><?php echo htmlspecialchars($user['username'] . ' - ' . $user['nama_lengkap']); ?></option>
+                                        <option value="<?php echo htmlspecialchars($user['id']); ?>"><?php echo htmlspecialchars($user['username'] . ' - ' . $user['nama_lengkap']); ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -301,7 +301,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">Update</button>
+                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                     </div>
                 </form>
             </div>
@@ -319,35 +319,65 @@ $custom_js = "
                     url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
                 },
                 columnDefs: [
-                    { responsivePriority: 1, targets: 0 },   // No
-                    { responsivePriority: 2, targets: 2 },   // Nama Lengkap
-                    { responsivePriority: 3, targets: 1 },   // NIP
-                    { responsivePriority: 4, targets: 4 },   // Jabatan
-                    { responsivePriority: 5, targets: -1 },  // Aksi (last column)
-                    { responsivePriority: 6, targets: 7 },   // Status
-                    { responsivePriority: 7, targets: 3 },   // Jenis Kelamin
-                    { responsivePriority: 8, targets: 5 },   // No. Telepon
-                    { responsivePriority: 9, targets: 6 }    // Email
+                    { responsivePriority: 1, targets: 0 },    // No
+                    { responsivePriority: 2, targets: 2 },    // Nama Lengkap
+                    { responsivePriority: 3, targets: 1 },    // NIP
+                    { responsivePriority: 4, targets: 4 },    // Jabatan
+                    { responsivePriority: 5, targets: -1 },   // Aksi (last column)
+                    { responsivePriority: 6, targets: 7 },    // Status
+                    { responsivePriority: 7, targets: 3 },    // Jenis Kelamin
+                    { responsivePriority: 8, targets: 5 },    // No. Telepon
+                    { responsivePriority: 9, targets: 6 }     // Email
                 ]
             });
         }
+
+        // Initialize Select2 for dropdowns in Add Modal
+        $('#jabatan_id').select2({
+            dropdownParent: $('#addModal'),
+            placeholder: 'Pilih Jabatan',
+            allowClear: true,
+            width: '100%'
+        });
+        $('#user_id').select2({
+            dropdownParent: $('#addModal'),
+            placeholder: 'Pilih User (Opsional)',
+            allowClear: true,
+            width: '100%'
+        });
+
+        // Initialize Select2 for dropdowns in Edit Modal
+        $('#edit_jabatan_id').select2({
+            dropdownParent: $('#editModal'),
+            placeholder: 'Pilih Jabatan',
+            allowClear: true,
+            width: '100%'
+        });
+        $('#edit_user_id').select2({
+            dropdownParent: $('#editModal'),
+            placeholder: 'Pilih User (Opsional)',
+            allowClear: true,
+            width: '100%'
+        });
     });
     
     function editEmployee(employee) {
         $('#edit_id').val(employee.id);
-        $('#edit_nip').val(employee.nip);
-        $('#edit_nama_lengkap').val(employee.nama_lengkap);
-        $('#edit_alamat').val(employee.alamat || ''); // Handle null for alamat
-        $('#edit_no_telepon').val(employee.no_telepon || ''); // Handle null for no_telepon
-        $('#edit_email').val(employee.email || ''); // Handle null for email
-        $('#edit_tanggal_masuk').val(employee.tanggal_masuk);
-        $('#edit_gaji_pokok').val(employee.gaji_pokok);
-        $('#edit_jabatan_id').val(employee.jabatan_id);
-        $('#edit_status').val(employee.status);
-        $('#edit_user_id').val(employee.user_id);
+        $('#edit_nip').val(employee.nip || '');
+        $('#edit_nama_lengkap').val(employee.nama_lengkap || '');
+        $('#edit_alamat').val(employee.alamat || ''); 
+        $('#edit_no_telepon').val(employee.no_telepon || '');
+        $('#edit_email').val(employee.email || ''); 
+        $('#edit_tanggal_masuk').val(employee.tanggal_masuk || '');
+        $('#edit_gaji_pokok').val(employee.gaji_pokok || 0);
         
-        // Set jenis kelamin (menggunakan select dropdown)
-        $('#edit_jenis_kelamin').val(employee.jenis_kelamin);
+        // Set values for regular selects
+        $('#edit_jenis_kelamin').val(employee.jenis_kelamin || '');
+        $('#edit_status').val(employee.status || '');
+        
+        // Set Select2 values and trigger change
+        $('#edit_jabatan_id').val(employee.jabatan_id || '').trigger('change');
+        $('#edit_user_id').val(employee.user_id || '').trigger('change');
         
         $('#editModal').modal('show');
     }
@@ -361,7 +391,7 @@ $custom_js = "
             id: 'question',
             zindex: 999,
             title: 'Konfirmasi',
-            message: 'Apakah Anda yakin ingin menghapus data pegawai \\'' + nama_lengkap + '\\'?',
+            message: 'Apakah Anda yakin ingin menghapus data pegawai \'' + nama_lengkap + '\'?',
             position: 'center',
             buttons: [
                 ['<button><b>Ya, Hapus</b></button>', function (instance, toast) {

@@ -31,7 +31,7 @@ if (!function_exists('asset_path_footer')) {
     </div>
 </div>
 
-<div class="custom-setting bg-primary pe-0 d-flex flex-column rounded-start">
+<!-- <div class="custom-setting bg-primary pe-0 d-flex flex-column rounded-start">
     <button type="button" class="btn btn-wide border-0 text-white fs-20 avatar-sm rounded-end-0" id="light-dark-mode">
         <i class="mdi mdi-brightness-7 align-middle"></i>
         <i class="mdi mdi-white-balance-sunny align-middle"></i>
@@ -42,18 +42,19 @@ if (!function_exists('asset_path_footer')) {
     <button type="button" class="btn btn-wide border-0 text-white fs-16 avatar-sm" id="layout-dir-btn">
         <span>RTL</span>
     </button>
-</div>
+</div> -->
 
 <script src="<?php echo asset_path_footer('assets/libs/jquery/jquery.min.js'); ?>"></script>
 <script src="<?php echo asset_path_footer('assets/libs/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
 <script src="<?php echo asset_path_footer('assets/libs/metismenu/metisMenu.min.js'); ?>"></script>
+<script src="<?php echo asset_path_footer('assets/libs/select2/js/select2.min.js'); ?>"></script>
 <script src="<?php echo asset_path_footer('assets/libs/simplebar/simplebar.min.js'); ?>"></script>
 <script src="<?php echo asset_path_footer('assets/libs/node-waves/waves.min.js'); ?>"></script>
 <script src="<?php echo asset_path_footer('assets/js/app.js'); ?>"></script>
 <script src="<?php echo asset_path_footer('assets/js/common.js'); ?>"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 <!-- iziToast JS -->
-<script src="assets/libs/izitoast/js/iziToast.min.js"></script>
+<script src="<?php echo asset_path_footer('assets/libs/izitoast/js/iziToast.min.js'); ?>"></script>
 
 <?php if (isset($additional_js)): ?>
     <?php foreach ($additional_js as $js): ?>

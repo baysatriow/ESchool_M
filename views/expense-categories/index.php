@@ -22,10 +22,9 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h4 class="card-title">Daftar Kategori Pengeluaran</h4>
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4 class="card-title mb-0">Daftar Kategori Pengeluaran</h4>
+                            <div class="d-flex gap-2"> <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
                                     <i class="mdi mdi-plus"></i> Tambah Kategori
                                 </button>
                             </div>
@@ -34,31 +33,39 @@
                             <table id="datatable" class="table table-hover table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
+                                        <th width="5%">No</th>
                                         <th>Nama Kategori</th>
-                                        <th>Total Pengeluaran</th>
-                                        <th>Jumlah Transaksi</th>
                                         <th>Keterangan</th>
-                                        <th>Aksi</th>
+                                        <th>Total Transaksi</th>
+                                        <th>Total Nominal</th>
+                                        <th width="15%">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($expense_categories as $index => $row): ?>
+                                    <?php foreach ($categories as $index => $row): ?>
                                     <tr>
                                         <td><?php echo $index + 1; ?></td>
-                                        <td><?php echo htmlspecialchars($row['nama_kategori']); ?></td>
-                                        <td>Rp <?php echo number_format($row['total_pengeluaran'] ?? 0, 0, ',', '.'); ?></td>
                                         <td>
-                                            <span class="badge badge-info"><?php echo $row['jumlah_transaksi']; ?> transaksi</span>
+                                            <strong><?php echo htmlspecialchars($row['nama_kategori'] ?? ''); ?></strong>
                                         </td>
                                         <td><?php echo htmlspecialchars($row['keterangan'] ?? '-'); ?></td>
                                         <td>
-                                            <button type="button" class="btn btn-sm btn-warning" onclick="editExpenseCategory(<?php echo htmlspecialchars(json_encode($row)); ?>)">
-                                                <i class="mdi mdi-pencil"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-danger" onclick="deleteExpenseCategory(<?php echo $row['id']; ?>)">
-                                                <i class="mdi mdi-delete"></i>
-                                            </button>
+                                            <span class="badge bg-info"><?php echo number_format($row['total_transaksi'] ?? 0, 0, ',', '.'); ?></span>
+                                        </td>
+                                        <td class="text-danger fw-bold">Rp <?php echo number_format($row['total_nominal'] ?? 0, 0, ',', '.'); ?></td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-sm btn-warning"
+                                                        onclick="editCategory(<?php echo htmlspecialchars(json_encode($row), ENT_QUOTES, 'UTF-8'); ?>)"
+                                                        title="Edit">
+                                                    <i class="mdi mdi-pencil"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-danger"
+                                                        onclick="deleteCategory(<?php echo ($row['id'] ?? 'null'); ?>, '<?php echo htmlspecialchars($row['nama_kategori'] ?? '', ENT_QUOTES, 'UTF-8'); ?>')"
+                                                        title="Hapus">
+                                                    <i class="mdi mdi-delete"></i>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                     <?php endforeach; ?>
@@ -71,18 +78,17 @@
         </div>
     </div>
 
-    <!-- Add Modal -->
     <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addModalLabel">Tambah Kategori Pengeluaran</h5>
+                    <h5 class="modal-title" id="addModalLabel">Form Tambah Kategori Pengeluaran</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="POST" action="<?php echo Router::url('expense-categories/create'); ?>">
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="nama_kategori" class="form-label">Nama Kategori</label>
+                            <label for="nama_kategori" class="form-label">Nama Kategori <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="nama_kategori" name="nama_kategori" required>
                         </div>
                         <div class="mb-3">
@@ -92,29 +98,88 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
+                        <button type="submit" class="btn btn-primary">Simpan Data</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-<?php 
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Form Edit Kategori Pengeluaran</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" action="<?php echo Router::url('expense-categories/edit'); ?>">
+                    <input type="hidden" id="edit_id" name="id">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="edit_nama_kategori" class="form-label">Nama Kategori <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="edit_nama_kategori" name="nama_kategori" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_keterangan" class="form-label">Keterangan</label>
+                            <textarea class="form-control" id="edit_keterangan" name="keterangan" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php
 $custom_js = "
     $(document).ready(function() {
-        $('#datatable').DataTable({
-            responsive: true,
-            language: {
-                url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
-            }
+        if (typeof $.fn.DataTable !== 'undefined') {
+            $('#datatable').DataTable({
+                responsive: true,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/id.json' 
+                },
+                columnDefs: [
+                    { responsivePriority: 1, targets: 0 },    // No
+                    { responsivePriority: 2, targets: 1 },    // Nama Kategori
+                    { responsivePriority: 3, targets: -1 },  // Aksi (last column)
+                    { responsivePriority: 4, targets: 2 },    // Keterangan
+                    { responsivePriority: 5, targets: 3 },    // Total Transaksi
+                    { responsivePriority: 6, targets: 4 }     // Total Nominal
+                ]
+            });
+        }
+
+        // Initialize Select2 for category dropdowns in modals if needed (though not required by HTML here, good practice)
+        // If you ever add filters for categories to this page, you can uncomment and adjust these
+        /*
+        $('#kategori_id').select2({
+            dropdownParent: $('#addModal'),
+            placeholder: 'Pilih Kategori',
+            allowClear: true,
+            width: '100%'
         });
+        $('#edit_kategori_id').select2({
+            dropdownParent: $('#editModal'),
+            placeholder: 'Pilih Kategori',
+            allowClear: true,
+            width: '100%'
+        });
+        */
     });
     
-    function editExpenseCategory(category) {
-        // Implementation for edit modal
+    function editCategory(category) {
+        $('#edit_id').val(category.id);
+        $('#edit_nama_kategori').val(category.nama_kategori || ''); // Use || '' for consistency
+        $('#edit_keterangan').val(category.keterangan || '');
+        $('#editModal').modal('show');
     }
     
-    function deleteExpenseCategory(id) {
+    function deleteCategory(id, nama_kategori) {
         iziToast.question({
             timeout: 20000,
             close: false,
@@ -123,7 +188,7 @@ $custom_js = "
             id: 'question',
             zindex: 999,
             title: 'Konfirmasi',
-            message: 'Apakah Anda yakin ingin menghapus kategori ini?',
+            message: 'Apakah Anda yakin ingin menghapus kategori \'' + nama_kategori + '\'?',
             position: 'center',
             buttons: [
                 ['<button><b>Ya, Hapus</b></button>', function (instance, toast) {
@@ -144,5 +209,5 @@ $custom_js = "
     }
 ";
 
-include 'includes/footer.php'; 
+include 'includes/footer.php';
 ?>

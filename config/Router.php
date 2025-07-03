@@ -38,7 +38,17 @@ class Router {
             'income/edit' => ['controller' => 'IncomeController', 'method' => 'edit', 'middleware' => 'bendahara'],
             'income/delete' => ['controller' => 'IncomeController', 'method' => 'delete', 'middleware' => 'bendahara'],
             'income/detail' => ['controller' => 'IncomeController', 'method' => 'detail', 'middleware' => 'bendahara'],
+            'income/receipt' => ['controller' => 'IncomeController', 'method' => 'receipt', 'middleware' => 'bendahara'],
 
+            // Data Pembayaran Management - Admin & Bendahara only
+            'data-pembayaran' => ['controller' => 'DataPembayaranController', 'method' => 'index', 'middleware' => 'bendahara'],
+            'data-pembayaran/create' => ['controller' => 'DataPembayaranController', 'method' => 'create', 'middleware' => 'bendahara'],
+            'data-pembayaran/edit' => ['controller' => 'DataPembayaranController', 'method' => 'edit', 'middleware' => 'bendahara'],
+            'data-pembayaran/delete' => ['controller' => 'DataPembayaranController', 'method' => 'delete', 'middleware' => 'bendahara'],
+            'data-pembayaran/assign' => ['controller' => 'DataPembayaranController', 'method' => 'assign', 'middleware' => 'bendahara'],
+            'data-pembayaran/process-assign' => ['controller' => 'DataPembayaranController', 'method' => 'processAssign', 'middleware' => 'bendahara'],
+            'data-pembayaran/remove-assign' => ['controller' => 'DataPembayaranController', 'method' => 'removeAssign', 'middleware' => 'bendahara'],
+            
             // Income Categories Management - Admin & Bendahara only
             'income-categories' => ['controller' => 'IncomeCategoryController', 'method' => 'index', 'middleware' => 'bendahara'],
             'income-categories/create' => ['controller' => 'IncomeCategoryController', 'method' => 'create', 'middleware' => 'bendahara'],
@@ -51,15 +61,17 @@ class Router {
             'student-payments/edit' => ['controller' => 'PaymentController', 'method' => 'edit', 'middleware' => 'bendahara'],
             'student-payments/delete' => ['controller' => 'PaymentController', 'method' => 'delete', 'middleware' => 'bendahara'],
             'student-payments/detail' => ['controller' => 'PaymentController', 'method' => 'detail', 'middleware' => 'bendahara'],
-            'student-payments/form' => ['controller' => 'PaymentController', 'method' => 'form', 'middleware' => 'bendahara'],
-            'student-payments/print' => ['controller' => 'PaymentController', 'method' => 'print', 'middleware' => 'bendahara'],
-        
+            'student-payments/pay' => ['controller' => 'PaymentController', 'method' => 'pay', 'middleware' => 'bendahara'],
+            'student-payments/process-payment' => ['controller' => 'PaymentController', 'method' => 'processPayment', 'middleware' => 'bendahara'],
+            'student-payments/receipt' => ['controller' => 'PaymentController', 'method' => 'receipt', 'middleware' => 'bendahara'],
+
             // Expense Management - Admin & Bendahara only
             'expenses' => ['controller' => 'ExpenseController', 'method' => 'index', 'middleware' => 'bendahara'],
             'expenses/create' => ['controller' => 'ExpenseController', 'method' => 'create', 'middleware' => 'bendahara'],
             'expenses/edit' => ['controller' => 'ExpenseController', 'method' => 'edit', 'middleware' => 'bendahara'],
             'expenses/delete' => ['controller' => 'ExpenseController', 'method' => 'delete', 'middleware' => 'bendahara'],
-        
+            'expenses/receipt' => ['controller' => 'ExpenseController', 'method' => 'receipt', 'middleware' => 'bendahara'],
+            
             // Reference Data - Admin & Operator only
             'classes' => ['controller' => 'ClassController', 'method' => 'index', 'middleware' => 'operator'],
             'academic-years' => ['controller' => 'AcademicYearController', 'method' => 'index', 'middleware' => 'operator'],
@@ -108,27 +120,9 @@ class Router {
         
             // Student Status - Admin & Operator only
             'student-status' => ['controller' => 'StudentStatusController', 'method' => 'index', 'middleware' => 'operator'],
-            'student-status/update' => ['controller' => 'StudentStatusController', 'method' => 'updateStatus', 'middleware' => 'operator'],
+            'student-status/update' => ['controller' => 'StudentStatusController', 'method' => 'update', 'middleware' => 'operator'],
             'status-history' => ['controller' => 'StudentStatusController', 'method' => 'history', 'middleware' => 'operator'],
-
-            // Payroll Management - Admin & Bendahara only
-            'payroll' => ['controller' => 'PayrollController', 'method' => 'index', 'middleware' => 'bendahara'],
-            'payroll/create' => ['controller' => 'PayrollController', 'method' => 'create', 'middleware' => 'bendahara'],
-            'payroll/edit' => ['controller' => 'PayrollController', 'method' => 'edit', 'middleware' => 'bendahara'],
-            'payroll/delete' => ['controller' => 'PayrollController', 'method' => 'delete', 'middleware' => 'bendahara'],
-            'payroll/print' => ['controller' => 'PayrollController', 'method' => 'print', 'middleware' => 'bendahara'],
-
-            // Payroll Components - Admin & Bendahara only
-            'payroll-components' => ['controller' => 'PayrollComponentController', 'method' => 'index', 'middleware' => 'bendahara'],
-            'payroll-components/create' => ['controller' => 'PayrollComponentController', 'method' => 'create', 'middleware' => 'bendahara'],
-            'payroll-components/edit' => ['controller' => 'PayrollComponentController', 'method' => 'edit', 'middleware' => 'bendahara'],
-            'payroll-components/delete' => ['controller' => 'PayrollComponentController', 'method' => 'delete', 'middleware' => 'bendahara'],
-
-            // Payment Rates - Admin & Bendahara only
-            'payment-rates' => ['controller' => 'PaymentRateController', 'method' => 'index', 'middleware' => 'bendahara'],
-            'payment-rates/create' => ['controller' => 'PaymentRateController', 'method' => 'create', 'middleware' => 'bendahara'],
-            'payment-rates/edit' => ['controller' => 'PaymentRateController', 'method' => 'edit', 'middleware' => 'bendahara'],
-            'payment-rates/delete' => ['controller' => 'PaymentRateController', 'method' => 'delete', 'middleware' => 'bendahara'],
+            'student-status/get-data' => ['controller' => 'StudentStatusController', 'method' => 'getStudentData', 'middleware' => 'operator'],
         ];
     }
     
@@ -136,6 +130,11 @@ class Router {
         $uri = trim($_SERVER['REQUEST_URI'], '/');
         $uri = parse_url($uri, PHP_URL_PATH);
         $uri = str_replace('eschool_m/', '', $uri); // Remove base path if needed
+        
+        if ($uri === '' || $uri === 'eschool_m') {
+        header('Location: ' . self::url('dashboard'));
+        exit;
+        }
         
         if (isset($this->routes[$uri])) {
             $route = $this->routes[$uri];

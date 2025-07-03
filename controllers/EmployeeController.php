@@ -53,13 +53,13 @@ class EmployeeController extends BaseController {
         $attendance_history = $employee->getAttendanceHistory($id, 30);
         
         // Get payroll history
-        $payroll_history = $employee->getPayrollHistory($id);
+        // $payroll_history = $employee->getPayrollHistory($id);
         
         $data = [
             'page_title' => 'Detail Pegawai - ' . $employee_data['nama_lengkap'],
             'employee' => $employee_data,
-            'attendance_history' => $attendance_history,
-            'payroll_history' => $payroll_history
+            'attendance_history' => $attendance_history
+            // 'payroll_history' => $payroll_history
         ];
         
         $this->view('employees/detail', $data);

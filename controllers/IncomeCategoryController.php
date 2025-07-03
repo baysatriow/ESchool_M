@@ -1,6 +1,5 @@
 <?php
-
-require_once 'models/BaseModel.php';
+require_once 'controllers/BaseController.php';
 require_once 'models/IncomeCategory.php';
 
 class IncomeCategoryController extends BaseController {
@@ -32,9 +31,15 @@ class IncomeCategoryController extends BaseController {
             $incomeCategory = new IncomeCategory($this->db);
             
             $data = [
-                'nama_kategori' => $_POST['nama_kategori'],
-                'keterangan' => $_POST['keterangan'] ?? ''
+                'nama_kategori' => trim($_POST['nama_kategori']),
+                'keterangan' => trim($_POST['keterangan'] ?? '')
             ];
+            
+            // Validation
+            if (empty($data['nama_kategori'])) {
+                $this->redirect('income-categories', 'Nama kategori tidak boleh kosong!', 'error');
+                return;
+            }
             
             try {
                 $result = $incomeCategory->create($data);
@@ -55,9 +60,15 @@ class IncomeCategoryController extends BaseController {
             
             $id = $_POST['id'];
             $data = [
-                'nama_kategori' => $_POST['nama_kategori'],
-                'keterangan' => $_POST['keterangan']
+                'nama_kategori' => trim($_POST['nama_kategori']),
+                'keterangan' => trim($_POST['keterangan'] ?? '')
             ];
+            
+            // Validation
+            if (empty($data['nama_kategori'])) {
+                $this->redirect('income-categories', 'Nama kategori tidak boleh kosong!', 'error');
+                return;
+            }
             
             try {
                 $result = $incomeCategory->update($id, $data);
@@ -79,13 +90,7 @@ class IncomeCategoryController extends BaseController {
             
             try {
                 // Check if category is being used
-                $query = "SELECT COUNT(*) as count FROM t_pendapatan WHERE kategori_id = :id";
-                $stmt = $this->db->prepare($query);
-                $stmt->bindValue(':id', $id);
-                $stmt->execute();
-                $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                
-                if ($result['count'] > 0) {
+                if ($incomeCategory->isUsed($id)) {
                     $this->redirect('income-categories', 'Kategori tidak dapat dihapus karena masih digunakan!', 'error');
                     return;
                 }

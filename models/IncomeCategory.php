@@ -1,7 +1,12 @@
 <?php
+require_once 'models/BaseModel.php';
 
 class IncomeCategory extends BaseModel {
     protected $table_name = "m_kategori_pendapatan";
+    
+    public function __construct($db) {
+        parent::__construct($db);
+    }
     
     public function getIncomeCategoriesWithStats() {
         $query = "SELECT kp.*, 
@@ -16,5 +21,15 @@ class IncomeCategory extends BaseModel {
         $stmt->execute();
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    public function isUsed($id) {
+        $query = "SELECT COUNT(*) as count FROM t_pendapatan WHERE kategori_id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':id', $id);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return $result['count'] > 0;
     }
 }

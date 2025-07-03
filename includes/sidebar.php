@@ -51,6 +51,7 @@ function isOperator($currentRole) {
                         <li><a href="<?php echo Router::url('student-payments'); ?>"><i class="mdi mdi-checkbox-blank-circle align-middle"></i>Pembayaran Siswa</a></li>
                         <li><a href="<?php echo Router::url('income-categories'); ?>"><i class="mdi mdi-checkbox-blank-circle align-middle"></i>Kategori Pendapatan</a></li>
                         <li><a href="<?php echo Router::url('payment-types'); ?>"><i class="mdi mdi-checkbox-blank-circle align-middle"></i>Jenis Pembayaran</a></li>
+                        <li><a href="<?php echo Router::url('data-pembayaran'); ?>"><i class="mdi mdi-checkbox-blank-circle align-middle"></i>Data Pembayaran</a></li>
                     </ul>
                 </li>
                 <li>
@@ -63,6 +64,15 @@ function isOperator($currentRole) {
                         <li><a href="<?php echo Router::url('expense-categories'); ?>"><i class="mdi mdi-checkbox-blank-circle align-middle"></i>Kategori Pengeluaran</a></li>
                     </ul>
                 </li>
+                <?php endif; ?>
+
+                <?php if (isBendahara($userRole)): ?>
+                <li class="menu-title">Manajemen Presensi</li>
+                <li><a href="<?php echo Router::url('attendance'); ?>"><i class="fa fa-calendar-check"></i> <span>Presensi Pegawai</span></a></li>
+                <?php endif; ?>
+
+                <?php if (isBendahara($userRole)): ?>
+                <li class="menu-title">Manajemen Laporan</li>
                 <li>
                     <a href="javascript: void(0);" class="has-arrow">
                         <i class="fa fa-chart-line"></i>
@@ -73,14 +83,7 @@ function isOperator($currentRole) {
                         <li><a href="<?php echo Router::url('arrears-reports'); ?>"><i class="mdi mdi-checkbox-blank-circle align-middle"></i>Laporan Tunggakan Siswa</a></li>
                     </ul>
                 </li>
-                <?php endif; ?>
-
-                <?php if (isBendahara($userRole)): ?>
-                <li class="menu-title">Managemen Gaji</li>
-                <li><a href="<?php echo Router::url('attendance'); ?>"><i class="fa fa-calendar-check"></i> <span>Presensi Pegawai</span></a></li>
-                <li><a href="<?php echo Router::url('payroll'); ?>"><i class="fa fa-money-check-alt"></i> <span>Penggajian</span></a></li>
-                <li><a href="<?php echo Router::url('payroll-components'); ?>"><i class="fa fa-list-alt"></i> <span>Komponen Gaji</span></a></li>
-                <li>
+                <!-- <li>
                     <a href="javascript: void(0);" class="has-arrow">
                         <i class="fa fa-chart-bar"></i>
                         <span>Laporan Gaji</span>
@@ -88,7 +91,7 @@ function isOperator($currentRole) {
                     <ul class="sub-menu" aria-expanded="false">
                         <li><a href="<?php echo Router::url('salary-reports'); ?>"><i class="mdi mdi-checkbox-blank-circle align-middle"></i>Laporan Gaji Pegawai</a></li>
                     </ul>
-                </li>
+                </li> -->
                 <?php endif; ?>
 
                 <?php if (isOperator($userRole)): ?>
@@ -121,21 +124,10 @@ function isOperator($currentRole) {
                         <span>Setting</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
-                        <li><a href="<?php echo Router::url('app-settings'); ?>"><i class="mdi mdi-checkbox-blank-circle align-middle"></i>Setting Aplikasi</a></li>
-                        <li><a href="<?php echo Router::url('user-management'); ?>"><i class="mdi mdi-checkbox-blank-circle align-middle"></i>Managemen Pengguna</a></li>
+                        <!-- <li><a href="<?php echo Router::url('app-settings'); ?>"><i class="mdi mdi-checkbox-blank-circle align-middle"></i>Setting Aplikasi</a></li> -->
+                        <li><a href="<?php echo Router::url('user-management'); ?>"><i class="mdi mdi-checkbox-blank-circle align-middle"></i>Manajemen Pengguna</a></li>
+                        <li><a href="<?php echo Router::url('logout'); ?>"><i class="mdi mdi-checkbox-blank-circle align-middle"></i>Keluar Aplikasi</a></li>
                     </ul>
-                </li>
-                <?php endif; ?>
-
-                <!-- Debug Info - Hapus setelah testing -->
-                <?php if (isset($_GET['debug'])): ?>
-                <li class="menu-title" style="color: red;">DEBUG INFO</li>
-                <li style="padding: 10px; color: red; font-size: 12px;">
-                    Role: <?php echo $userRole; ?><br>
-                    User ID: <?php echo $userId; ?><br>
-                    Is Admin: <?php echo isAdmin($userRole) ? 'YES' : 'NO'; ?><br>
-                    Is Bendahara: <?php echo isBendahara($userRole) ? 'YES' : 'NO'; ?><br>
-                    Is Operator: <?php echo isOperator($userRole) ? 'YES' : 'NO'; ?>
                 </li>
                 <?php endif; ?>
             </ul>

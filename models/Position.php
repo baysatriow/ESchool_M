@@ -16,6 +16,26 @@ class Position extends BaseModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
+    public function isExists($position, $excludeId = null) {
+        $query = "SELECT COUNT(*) as count FROM " . $this->table_name . " WHERE nama_jabatan = :nama_jabatan";
+        
+        if ($excludeId) {
+            $query .= " AND id != :exclude_id";
+        }
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':nama_jabatan', $position);
+        
+        if ($excludeId) {
+            $stmt->bindValue(':exclude_id', $excludeId);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return $result['count'] > 0;
+    }
+
     public function canDelete($id) {
         $query = "SELECT COUNT(*) as count FROM m_pegawai WHERE jabatan_id = ? AND status = 'aktif'";
         $stmt = $this->conn->prepare($query);

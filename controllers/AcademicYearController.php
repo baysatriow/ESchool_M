@@ -1,8 +1,4 @@
 <?php
-
-require_once 'models/BaseModel.php';
-require_once 'models/AcademicYear.php';
-
 class AcademicYearController extends BaseController {
     
     public function index() {
@@ -31,21 +27,38 @@ class AcademicYearController extends BaseController {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $academicYear = new AcademicYear($this->db);
             
+            // Ambil data dari form
+            $tahunMulai = $_POST['tahun_mulai'];
+            $tahunSelesai = $_POST['tahun_selesai'];
+            $tahunAjaran = $tahunMulai . '/' . $tahunSelesai;
+            
             $data = [
-                'tahun_ajaran' => $_POST['tahun_ajaran'],
+                'tahun_ajaran' => $tahunAjaran,
                 'bulan_mulai' => (int)$_POST['bulan_mulai'],
                 'bulan_selesai' => (int)$_POST['bulan_selesai'],
                 'status' => $_POST['status'] ?? 'tidak_aktif'
             ];
             
             // Validate months
-            if ($data['bulan_mulai'] < 1 || $data['bulan_mulai'] > 12 || 
+            if ($data['bulan_mulai'] < 1 || $data['bulan_mulai'] > 12 ||
                 $data['bulan_selesai'] < 1 || $data['bulan_selesai'] > 12) {
                 $this->redirect('academic-years', 'Bulan tidak valid! Pilih bulan 1-12.', 'error');
                 return;
             }
             
+            // Validate tahun
+            if ($tahunMulai >= $tahunSelesai) {
+                $this->redirect('academic-years', 'Tahun selesai harus lebih besar dari tahun mulai!', 'error');
+                return;
+            }
+            
             try {
+                // Cek apakah tahun ajaran sudah ada
+                if ($academicYear->isExists($tahunAjaran)) {
+                    $this->redirect('academic-years', 'Tahun ajaran ' . $tahunAjaran . ' sudah ada! Silakan gunakan tahun ajaran yang berbeda.', 'error');
+                    return;
+                }
+                
                 // If setting as active, deactivate others first
                 if ($data['status'] === 'aktif') {
                     $this->db->prepare("UPDATE m_tahun_ajaran SET status = 'tidak_aktif'")->execute();
@@ -68,21 +81,37 @@ class AcademicYearController extends BaseController {
             $academicYear = new AcademicYear($this->db);
             
             $id = $_POST['id'];
+            $tahunMulai = $_POST['tahun_mulai'];
+            $tahunSelesai = $_POST['tahun_selesai'];
+            $tahunAjaran = $tahunMulai . '/' . $tahunSelesai;
+            
             $data = [
-                'tahun_ajaran' => $_POST['tahun_ajaran'],
+                'tahun_ajaran' => $tahunAjaran,
                 'bulan_mulai' => (int)$_POST['bulan_mulai'],
                 'bulan_selesai' => (int)$_POST['bulan_selesai'],
                 'status' => $_POST['status']
             ];
             
             // Validate months
-            if ($data['bulan_mulai'] < 1 || $data['bulan_mulai'] > 12 || 
+            if ($data['bulan_mulai'] < 1 || $data['bulan_mulai'] > 12 ||
                 $data['bulan_selesai'] < 1 || $data['bulan_selesai'] > 12) {
                 $this->redirect('academic-years', 'Bulan tidak valid! Pilih bulan 1-12.', 'error');
                 return;
             }
             
+            // Validate tahun
+            if ($tahunMulai >= $tahunSelesai) {
+                $this->redirect('academic-years', 'Tahun selesai harus lebih besar dari tahun mulai!', 'error');
+                return;
+            }
+            
             try {
+                // Cek apakah tahun ajaran sudah ada (kecuali untuk data yang sedang diedit)
+                if ($academicYear->isExists($tahunAjaran, $id)) {
+                    $this->redirect('academic-years', 'Tahun ajaran ' . $tahunAjaran . ' sudah ada! Silakan gunakan tahun ajaran yang berbeda.', 'error');
+                    return;
+                }
+                
                 // If setting as active, deactivate others first
                 if ($data['status'] === 'aktif') {
                     $this->db->prepare("UPDATE m_tahun_ajaran SET status = 'tidak_aktif'")->execute();
@@ -118,3 +147,4 @@ class AcademicYearController extends BaseController {
         }
     }
 }
+?>

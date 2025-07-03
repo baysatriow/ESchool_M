@@ -1,17 +1,16 @@
 <?php
-
-require_once 'models/BaseModel.php';
+require_once 'controllers/BaseController.php';
 require_once 'models/ExpenseCategory.php';
 
 class ExpenseCategoryController extends BaseController {
     
     public function index() {
         $expenseCategory = new ExpenseCategory($this->db);
-        $expenseCategories = $expenseCategory->getCategoriesWithTotal();
+        $categories = $expenseCategory->getExpenseCategoriesWithStats();
         
         $data = [
             'page_title' => 'Kategori Pengeluaran',
-            'expense_categories' => $expenseCategories,
+            'categories' => $categories,
             'additional_css' => [
                 'assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css',
                 'assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css'
@@ -32,9 +31,15 @@ class ExpenseCategoryController extends BaseController {
             $expenseCategory = new ExpenseCategory($this->db);
             
             $data = [
-                'nama_kategori' => $_POST['nama_kategori'],
-                'keterangan' => $_POST['keterangan'] ?? ''
+                'nama_kategori' => trim($_POST['nama_kategori']),
+                'keterangan' => trim($_POST['keterangan'] ?? '')
             ];
+            
+            // Validation
+            if (empty($data['nama_kategori'])) {
+                $this->redirect('expense-categories', 'Nama kategori tidak boleh kosong!', 'error');
+                return;
+            }
             
             try {
                 $result = $expenseCategory->create($data);
@@ -55,9 +60,15 @@ class ExpenseCategoryController extends BaseController {
             
             $id = $_POST['id'];
             $data = [
-                'nama_kategori' => $_POST['nama_kategori'],
-                'keterangan' => $_POST['keterangan']
+                'nama_kategori' => trim($_POST['nama_kategori']),
+                'keterangan' => trim($_POST['keterangan'] ?? '')
             ];
+            
+            // Validation
+            if (empty($data['nama_kategori'])) {
+                $this->redirect('expense-categories', 'Nama kategori tidak boleh kosong!', 'error');
+                return;
+            }
             
             try {
                 $result = $expenseCategory->update($id, $data);
@@ -78,6 +89,12 @@ class ExpenseCategoryController extends BaseController {
             $id = $_POST['id'];
             
             try {
+                // Check if category is being used
+                if ($expenseCategory->isUsed($id)) {
+                    $this->redirect('expense-categories', 'Kategori tidak dapat dihapus karena masih digunakan!', 'error');
+                    return;
+                }
+                
                 $result = $expenseCategory->delete($id);
                 if ($result) {
                     $this->redirect('expense-categories', 'Kategori pengeluaran berhasil dihapus!', 'success');

@@ -37,6 +37,11 @@ class ClassController extends BaseController {
             ];
             
             try {
+                if ($class->isExists($data['nama_kelas'])) {
+                    $this->redirect('classes', 'Nama kelas ' . $data['nama_kelas'] . ' sudah ada! Silakan gunakan nama kelas yang berbeda.', 'error');
+                    return;
+                }
+                
                 $result = $class->create($data);
                 if ($result) {
                     $this->redirect('classes', 'Data kelas berhasil ditambahkan!', 'success');
@@ -61,6 +66,10 @@ class ClassController extends BaseController {
             ];
             
             try {
+                if ($class->isExists($data['nama_kelas'], $id)) {
+                    $this->redirect('classes', 'Nama kelas ' . $data['nama_kelas'] . ' sudah ada! Silakan gunakan nama kelas yang berbeda.', 'error');
+                    return;
+                }
                 $result = $class->update($id, $data);
                 if ($result) {
                     $this->redirect('classes', 'Data kelas berhasil diperbarui!', 'success');

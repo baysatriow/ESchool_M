@@ -25,14 +25,14 @@
                         <div class="card-body">
                             <div class="text-center">
                                 <div class="avatar-lg mx-auto mb-4">
-                                    <div class="avatar-title bg-success rounded-circle text-white" style="font-size: 2rem;">
-                                        <?php echo strtoupper(substr($employee['nama_lengkap'], 0, 1)); ?>
+                                    <div class="avatar-title bg-success rounded-circle text-white" style="font-size: 4rem;">
+                                        <?php echo strtoupper(substr($employee['nama_lengkap'] ?? 'U', 0, 1)); ?>
                                     </div>
                                 </div>
-                                <h5 class="mb-1"><?php echo htmlspecialchars($employee['nama_lengkap']); ?></h5>
-                                <p class="text-muted mb-2"><?php echo htmlspecialchars($employee['nip']); ?></p>
-                                <span class="badge badge-<?php echo $employee['status'] == 'aktif' ? 'success' : 'secondary'; ?> badge-pill">
-                                    <?php echo ucfirst($employee['status']); ?>
+                                <h5 class="mb-1"><?php echo htmlspecialchars($employee['nama_lengkap'] ?? '-'); ?></h5>
+                                <p class="text-muted mb-2"><?php echo htmlspecialchars($employee['nip'] ?? '-'); ?></p>
+                                <span class="badge bg-<?php echo (($employee['status'] ?? '') == 'aktif') ? 'success' : 'secondary'; ?> badge-pill">
+                                    <?php echo ucfirst($employee['status'] ?? '-'); ?>
                                 </span>
                             </div>
                         </div>
@@ -43,58 +43,74 @@
                             <h4 class="card-title mb-0">Informasi Pribadi</h4>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-borderless mb-0">
-                                    <tbody>
-                                        <tr>
-                                            <th class="ps-0" scope="row">NIP :</th>
-                                            <td class="text-muted"><?php echo htmlspecialchars($employee['nip']); ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th class="ps-0" scope="row">Jenis Kelamin :</th>
-                                            <td class="text-muted"><?php echo $employee['jenis_kelamin'] == 'L' ? 'Laki-laki' : 'Perempuan'; ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th class="ps-0" scope="row">Jabatan :</th>
-                                            <td class="text-muted"><?php echo htmlspecialchars($employee['nama_jabatan'] ?? '-'); ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th class="ps-0" scope="row">Tanggal Masuk :</th>
-                                            <td class="text-muted"><?php echo date('d/m/Y', strtotime($employee['tanggal_masuk'])); ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th class="ps-0" scope="row">Gaji Pokok :</th>
-                                            <td class="text-muted">Rp <?php echo number_format($employee['gaji_pokok'], 0, ',', '.'); ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th class="ps-0" scope="row">No. Telepon :</th>
-                                            <td class="text-muted"><?php echo htmlspecialchars($employee['no_telepon'] ?? '-'); ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th class="ps-0" scope="row">Email :</th>
-                                            <td class="text-muted"><?php echo htmlspecialchars($employee['email'] ?? '-'); ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th class="ps-0" scope="row">Alamat :</th>
-                                            <td class="text-muted"><?php echo htmlspecialchars($employee['alamat'] ?? '-'); ?></td>
-                                        </tr>
-                                        <?php if ($employee['username']): ?>
-                                        <tr>
-                                            <th class="ps-0" scope="row">Username :</th>
-                                            <td class="text-muted"><?php echo htmlspecialchars($employee['username']); ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th class="ps-0" scope="row">Role :</th>
-                                            <td class="text-muted">
-                                                <span class="badge badge-info">
-                                                    <?php echo ucfirst(str_replace('_', ' ', $employee['role'])); ?>
-                                                </span>
-                                            </td>
-                                        </tr>
-                                        <?php endif; ?>
-                                    </tbody>
-                                </table>
+                            <div class="mb-3 row">
+                                <label class="col-sm-5 col-form-label">NIY:</label>
+                                <div class="col-sm-7">
+                                    <p class="form-control-plaintext"><?php echo htmlspecialchars($employee['nip'] ?? '-'); ?></p>
+                                </div>
                             </div>
+                            <div class="mb-3 row">
+                                <label class="col-sm-5 col-form-label">Jenis Kelamin:</label>
+                                <div class="col-sm-7">
+                                    <p class="form-control-plaintext">
+                                        <?php echo (($employee['jenis_kelamin'] ?? '') == 'L') ? 'Laki-laki' : ((($employee['jenis_kelamin'] ?? '') == 'P') ? 'Perempuan' : '-'); ?>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label class="col-sm-5 col-form-label">Jabatan:</label>
+                                <div class="col-sm-7">
+                                    <p class="form-control-plaintext"><?php echo htmlspecialchars($employee['nama_jabatan'] ?? '-'); ?></p>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label class="col-sm-5 col-form-label">Tanggal Masuk:</label>
+                                <div class="col-sm-7">
+                                    <p class="form-control-plaintext"><?php echo ($employee['tanggal_masuk'] ? date('d/m/Y', strtotime($employee['tanggal_masuk'])) : '-'); ?></p>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label class="col-sm-5 col-form-label">Gaji Pokok:</label>
+                                <div class="col-sm-7">
+                                    <p class="form-control-plaintext">Rp <?php echo number_format($employee['gaji_pokok'] ?? 0, 0, ',', '.'); ?></p>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label class="col-sm-5 col-form-label">No. Telepon:</label>
+                                <div class="col-sm-7">
+                                    <p class="form-control-plaintext"><?php echo htmlspecialchars($employee['no_telepon'] ?? '-'); ?></p>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label class="col-sm-5 col-form-label">Email:</label>
+                                <div class="col-sm-7">
+                                    <p class="form-control-plaintext"><?php echo htmlspecialchars($employee['email'] ?? '-'); ?></p>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label class="col-sm-5 col-form-label">Alamat:</label>
+                                <div class="col-sm-7">
+                                    <p class="form-control-plaintext"><?php echo htmlspecialchars($employee['alamat'] ?? '-'); ?></p>
+                                </div>
+                            </div>
+                            <?php if (!empty($employee['username'])): ?>
+                            <div class="mb-3 row">
+                                <label class="col-sm-5 col-form-label">Username:</label>
+                                <div class="col-sm-7">
+                                    <p class="form-control-plaintext"><?php echo htmlspecialchars($employee['username']); ?></p>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label class="col-sm-5 col-form-label">Role:</label>
+                                <div class="col-sm-7">
+                                    <p class="form-control-plaintext">
+                                        <span class="badge bg-info">
+                                            <?php echo ucfirst(str_replace('_', ' ', $employee['role'] ?? '-')); ?>
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -108,18 +124,18 @@
                                         <i class="fas fa-clock"></i> Presensi (30 hari terakhir)
                                     </a>
                                 </li>
-                                <li class="nav-item">
+                                <!-- <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#payroll" role="tab">
                                         <i class="fas fa-money-check-alt"></i> Riwayat Gaji
                                     </a>
-                                </li>
+                                </li> -->
                             </ul>
                         </div>
                         <div class="card-body">
                             <div class="tab-content">
                                 <div class="tab-pane active" id="attendance" role="tabpanel">
                                     <div class="table-responsive">
-                                        <table class="table table-hover">
+                                        <table class="table table-hover table-bordered mb-0">
                                             <thead>
                                                 <tr>
                                                     <th>Tanggal</th>
@@ -132,7 +148,7 @@
                                             <tbody>
                                                 <?php if (empty($attendance_history)): ?>
                                                 <tr>
-                                                    <td colspan="5" class="text-center text-muted">Belum ada data presensi</td>
+                                                    <td colspan="5" class="text-center text-muted py-3">Belum ada data presensi untuk 30 hari terakhir.</td>
                                                 </tr>
                                                 <?php else: ?>
                                                 <?php foreach ($attendance_history as $attendance): ?>
@@ -147,50 +163,15 @@
                                                             'sakit' => 'secondary',
                                                             'alpa' => 'danger'
                                                         ];
-                                                        $color = $status_colors[$attendance['status_kehadiran']] ?? 'secondary';
+                                                        $color = $status_colors[($attendance['status_kehadiran'] ?? 'alpa')] ?? 'secondary';
                                                         ?>
-                                                        <span class="badge badge-<?php echo $color; ?>">
-                                                            <?php echo ucfirst($attendance['status_kehadiran']); ?>
+                                                        <span class="badge bg-<?php echo $color; ?>">
+                                                            <?php echo ucfirst(str_replace('_', ' ', $attendance['status_kehadiran'] ?? '-')); ?>
                                                         </span>
                                                     </td>
-                                                    <td><?php echo $attendance['jam_masuk'] ?? '-'; ?></td>
-                                                    <td><?php echo $attendance['jam_pulang'] ?? '-'; ?></td>
+                                                    <td><?php echo htmlspecialchars($attendance['jam_masuk'] ?? '-'); ?></td>
+                                                    <td><?php echo htmlspecialchars($attendance['jam_pulang'] ?? '-'); ?></td>
                                                     <td><?php echo htmlspecialchars($attendance['keterangan'] ?? '-'); ?></td>
-                                                </tr>
-                                                <?php endforeach; ?>
-                                                <?php endif; ?>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-
-                                <div class="tab-pane" id="payroll" role="tabpanel">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th>Periode</th>
-                                                    <th>Gaji Pokok</th>
-                                                    <th>Tunjangan</th>
-                                                    <th>Potongan</th>
-                                                    <th>Gaji Bersih</th>
-                                                    <th>Tanggal Bayar</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php if (empty($payroll_history)): ?>
-                                                <tr>
-                                                    <td colspan="6" class="text-center text-muted">Belum ada riwayat penggajian</td>
-                                                </tr>
-                                                <?php else: ?>
-                                                <?php foreach ($payroll_history as $payroll): ?>
-                                                <tr>
-                                                    <td><?php echo htmlspecialchars($payroll['periode_gaji']); ?></td>
-                                                    <td>Rp <?php echo number_format($payroll['gaji_pokok'], 0, ',', '.'); ?></td>
-                                                    <td>Rp <?php echo number_format($payroll['total_tunjangan'], 0, ',', '.'); ?></td>
-                                                    <td>Rp <?php echo number_format($payroll['total_potongan'], 0, ',', '.'); ?></td>
-                                                    <td><strong>Rp <?php echo number_format($payroll['gaji_bersih'], 0, ',', '.'); ?></strong></td>
-                                                    <td><?php echo date('d/m/Y', strtotime($payroll['tanggal_pembayaran'])); ?></td>
                                                 </tr>
                                                 <?php endforeach; ?>
                                                 <?php endif; ?>
@@ -207,4 +188,8 @@
     </div>
 </div>
 
-<?php include 'includes/footer.php'; ?>
+<?php
+$custom_js = ""; // No custom JavaScript needed for Select2 on this page based on current elements
+
+include 'includes/footer.php';
+?>

@@ -44,21 +44,6 @@ class Employee extends BaseModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getPayrollHistory($employee_id) {
-        $query = "SELECT p.*, u.nama_lengkap as processed_by
-                  FROM t_penggajian p
-                  LEFT JOIN m_users u ON p.user_id = u.id
-                  WHERE p.pegawai_id = :employee_id
-                  ORDER BY p.periode_gaji DESC
-                  LIMIT 12";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindValue(':employee_id', $employee_id);
-        $stmt->execute();
-        
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
     public function updateSalary($id, $gaji_pokok) {
         return $this->update($id, ['gaji_pokok' => $gaji_pokok]);
     }

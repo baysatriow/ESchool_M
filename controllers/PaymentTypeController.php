@@ -1,17 +1,17 @@
 <?php
 
-require_once 'models/BaseModel.php';
+require_once 'BaseController.php';
 require_once 'models/PaymentType.php';
 
 class PaymentTypeController extends BaseController {
     
     public function index() {
         $paymentType = new PaymentType($this->db);
-        $paymentTypes = $paymentType->getPaymentTypesWithTotal();
+        $payment_types = $paymentType->getPaymentTypesWithUsage();
         
         $data = [
             'page_title' => 'Jenis Pembayaran',
-            'payment_types' => $paymentTypes,
+            'payment_types' => $payment_types,
             'additional_css' => [
                 'assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css',
                 'assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css'
@@ -23,76 +23,83 @@ class PaymentTypeController extends BaseController {
                 'assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js'
             ]
         ];
-        
+
         $this->view('payment-types/index', $data);
     }
     
     public function create() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $paymentType = new PaymentType($this->db);
-            
-            $data = [
-                'kode_pembayaran' => $_POST['kode_pembayaran'],
-                'nama_pembayaran' => $_POST['nama_pembayaran'],
-                'tipe' => $_POST['tipe'],
-                'nominal_default' => $_POST['nominal_default'] ?? 0,
-                'keterangan' => $_POST['keterangan'] ?? ''
-            ];
-            
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
+                $paymentType = new PaymentType($this->db);
+                
+                $data = [
+                    'kode_pembayaran' => $_POST['kode_pembayaran'],
+                    'nama_pembayaran' => $_POST['nama_pembayaran'],
+                    'tipe' => $_POST['tipe'],
+                    'keterangan' => $_POST['keterangan'] ?? ''
+                ];
+                
                 $result = $paymentType->create($data);
+                
                 if ($result) {
-                    $this->redirect('payment-types', 'Jenis pembayaran berhasil ditambahkan!', 'success');
+                    $this->redirect('payment-types', 'Jenis pembayaran berhasil ditambahkan', 'success');
                 } else {
-                    $this->redirect('payment-types', 'Gagal menambahkan jenis pembayaran!', 'error');
+                    $this->redirect('payment-types', 'Gagal menambahkan jenis pembayaran', 'error');
                 }
             } catch (Exception $e) {
-                $this->redirect('payment-types', 'Error: ' . $e->getMessage(), 'error');
+                error_log("Error in PaymentTypeController::create: " . $e->getMessage());
+                $this->redirect('payment-types', 'Terjadi kesalahan: ' . $e->getMessage(), 'error');
             }
         }
+        
+        $this->redirect('payment-types');
     }
     
     public function edit() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $paymentType = new PaymentType($this->db);
-            
-            $id = $_POST['id'];
-            $data = [
-                'kode_pembayaran' => $_POST['kode_pembayaran'],
-                'nama_pembayaran' => $_POST['nama_pembayaran'],
-                'tipe' => $_POST['tipe'],
-                'nominal_default' => $_POST['nominal_default'],
-                'keterangan' => $_POST['keterangan']
-            ];
-            
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
-                $result = $paymentType->update($id, $data);
+                $paymentType = new PaymentType($this->db);
+                
+                $data = [
+                    'kode_pembayaran' => $_POST['kode_pembayaran'],
+                    'nama_pembayaran' => $_POST['nama_pembayaran'],
+                    'tipe' => $_POST['tipe'],
+                    'keterangan' => $_POST['keterangan'] ?? ''
+                ];
+                
+                $result = $paymentType->update($_POST['id'], $data);
+                
                 if ($result) {
-                    $this->redirect('payment-types', 'Jenis pembayaran berhasil diperbarui!', 'success');
+                    $this->redirect('payment-types', 'Jenis pembayaran berhasil diupdate', 'success');
                 } else {
-                    $this->redirect('payment-types', 'Gagal memperbarui jenis pembayaran!', 'error');
+                    $this->redirect('payment-types', 'Gagal mengupdate jenis pembayaran', 'error');
                 }
             } catch (Exception $e) {
-                $this->redirect('payment-types', 'Error: ' . $e->getMessage(), 'error');
+                error_log("Error in PaymentTypeController::edit: " . $e->getMessage());
+                $this->redirect('payment-types', 'Terjadi kesalahan: ' . $e->getMessage(), 'error');
             }
         }
+        
+        $this->redirect('payment-types');
     }
     
     public function delete() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $paymentType = new PaymentType($this->db);
-            $id = $_POST['id'];
-            
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
-                $result = $paymentType->delete($id);
-                if ($result) {
-                    $this->redirect('payment-types', 'Jenis pembayaran berhasil dihapus!', 'success');
+                $paymentType = new PaymentType($this->db);
+                $result = $paymentType->delete($_POST['id']);
+                
+                if ($result['success']) {
+                    $this->redirect('payment-types', $result['message'], 'success');
                 } else {
-                    $this->redirect('payment-types', 'Gagal menghapus jenis pembayaran!', 'error');
+                    $this->redirect('payment-types', $result['message'], 'error');
                 }
             } catch (Exception $e) {
-                $this->redirect('payment-types', 'Error: ' . $e->getMessage(), 'error');
+                error_log("Error in PaymentTypeController::delete: " . $e->getMessage());
+                $this->redirect('payment-types', 'Terjadi kesalahan: ' . $e->getMessage(), 'error');
             }
         }
+        
+        $this->redirect('payment-types');
     }
 }

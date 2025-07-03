@@ -108,7 +108,7 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>NIP</th>
+                                        <th>NIY</th>
                                         <th>Nama Pegawai</th>
                                         <th>Jabatan</th>
                                         <th>Jam Masuk</th>

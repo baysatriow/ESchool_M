@@ -11,7 +11,7 @@
                         <div class="page-title-right">
                             <ol class="breadcrumb m-0">
                                 <li class="breadcrumb-item"><a href="<?php echo Router::url('dashboard'); ?>">Dashboard</a></li>
-                                <li class="breadcrumb-item">Master Data</li>
+                                <li class="breadcrumb-item">Pendapatan</li>
                                 <li class="breadcrumb-item active">Kategori Pendapatan</li>
                             </ol>
                         </div>
@@ -24,11 +24,11 @@
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h4 class="card-title mb-0">Daftar Kategori Pendapatan</h4>
-                            <div class="d-flex">
-                                <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addModal">
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
                                     <i class="mdi mdi-plus"></i> Tambah Kategori
                                 </button>
-                                </div>
+                            </div>
                         </div>
                         <div class="card-body">
                             <table id="datatable" class="table table-hover table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -46,9 +46,13 @@
                                     <?php foreach ($categories as $index => $row): ?>
                                     <tr>
                                         <td><?php echo $index + 1; ?></td>
-                                        <td><?php echo htmlspecialchars($row['nama_kategori']); ?></td>
+                                        <td>
+                                            <strong><?php echo htmlspecialchars($row['nama_kategori']); ?></strong>
+                                        </td>
                                         <td><?php echo htmlspecialchars($row['keterangan'] ?? '-'); ?></td>
-                                        <td><?php echo number_format($row['total_transaksi'], 0, ',', '.'); ?></td>
+                                        <td>
+                                            <span class="badge bg-info"><?php echo number_format($row['total_transaksi'], 0, ',', '.'); ?></span>
+                                        </td>
                                         <td class="text-success fw-bold">Rp <?php echo number_format($row['total_nominal'], 0, ',', '.'); ?></td>
                                         <td>
                                             <div class="btn-group" role="group">
@@ -79,7 +83,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addModalLabel">Tambah Kategori Pendapatan</h5>
+                    <h5 class="modal-title" id="addModalLabel">Form Tambah Kategori Pendapatan</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="POST" action="<?php echo Router::url('income-categories/create'); ?>">
@@ -95,7 +99,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
+                        <button type="submit" class="btn btn-primary">Simpan Data</button>
                     </div>
                 </form>
             </div>
@@ -106,7 +110,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Edit Kategori Pendapatan</h5>
+                    <h5 class="modal-title" id="editModalLabel">Form Edit Kategori Pendapatan</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="POST" action="<?php echo Router::url('income-categories/edit'); ?>">
@@ -123,7 +127,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">Update</button>
+                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                     </div>
                 </form>
             </div>
@@ -138,30 +142,28 @@ $custom_js = "
             $('#datatable').DataTable({
                 responsive: true,
                 language: {
-                    // Pastikan URL i18n ini benar. Sebelumnya Anda pakai 1.11.5, sekarang 1.10.24.
-                    // Sebaiknya konsisten. Jika Bootstrap 5, gunakan yang terbaru (1.11.5 atau lebih baru).
-                    url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/id.json' 
+                    url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
                 },
                 columnDefs: [
-                    { responsivePriority: 1, targets: 0 },  // No
-                    { responsivePriority: 2, targets: 1 },  // Nama Kategori
+                    { responsivePriority: 1, targets: 0 },   // No
+                    { responsivePriority: 2, targets: 1 },   // Nama Kategori
                     { responsivePriority: 3, targets: -1 }, // Aksi (last column)
-                    { responsivePriority: 4, targets: 2 },  // Keterangan
-                    { responsivePriority: 5, targets: 3 },  // Total Transaksi
-                    { responsivePriority: 6, targets: 4 }   // Total Nominal
+                    { responsivePriority: 4, targets: 2 },   // Keterangan
+                    { responsivePriority: 5, targets: 3 },   // Total Transaksi
+                    { responsivePriority: 6, targets: 4 }    // Total Nominal
                 ]
             });
         }
     });
-    
+
     function editCategory(category) {
         $('#edit_id').val(category.id);
         $('#edit_nama_kategori').val(category.nama_kategori);
-        $('#edit_keterangan').val(category.keterangan || ''); // Handle null for keterangan
+        $('#edit_keterangan').val(category.keterangan || ''); // Use null coalescing for optional fields
         $('#editModal').modal('show');
     }
-    
-    function deleteCategory(id, nama_kategori) { // Added nama_kategori for better message
+
+    function deleteCategory(id, nama_kategori) {
         iziToast.question({
             timeout: 20000,
             close: false,
@@ -189,11 +191,6 @@ $custom_js = "
             ]
         });
     }
-    
-    // Fungsi printData bisa ditambahkan di sini jika diperlukan
-    // function printData() {
-    //     window.print();
-    // }
 ";
 
 include 'includes/footer.php';
