@@ -179,7 +179,7 @@ class Student extends BaseModel {
                   LEFT JOIN t_assign_pembayaran_siswa aps ON s.id = aps.siswa_id";
         
         $params = [];
-        $conditions = ["s.status = 'aktif'"];
+        $conditions = ["s.status IN ('aktif', 'naik_kelas')"];
         
         if ($tahun_ajaran_id) {
             $conditions[] = "(aps.data_pembayaran_id IS NULL OR aps.data_pembayaran_id IN (

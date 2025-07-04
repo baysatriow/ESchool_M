@@ -11,16 +11,8 @@ class ExpenseCategoryController extends BaseController {
         $data = [
             'page_title' => 'Kategori Pengeluaran',
             'categories' => $categories,
-            'additional_css' => [
-                'assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css',
-                'assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css'
-            ],
-            'additional_js' => [
-                'assets/libs/datatables.net/js/jquery.dataTables.min.js',
-                'assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js',
-                'assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js',
-                'assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js'
-            ]
+            'additional_css' => 1,
+            'additional_js' => 1
         ];
         
         $this->view('expense-categories/index', $data);
@@ -42,6 +34,10 @@ class ExpenseCategoryController extends BaseController {
             }
             
             try {
+                if ($expenseCategory->isExists($data['nama_kategori'])) {
+                    $this->redirect('expense-categories', 'Nama Kategori ' . $data['nama_kategori'] . ' sudah ada! Silakan gunakan nama kategori yang berbeda.', 'error');
+                    return;
+                }
                 $result = $expenseCategory->create($data);
                 if ($result) {
                     $this->redirect('expense-categories', 'Kategori pengeluaran berhasil ditambahkan!', 'success');
@@ -71,6 +67,10 @@ class ExpenseCategoryController extends BaseController {
             }
             
             try {
+                if ($expenseCategory->isExists($data['nama_kategori'], $id)) {
+                    $this->redirect('expense-categories', 'Nama Kategori ' . $data['nama_kategori'] . ' sudah ada! Silakan gunakan nama kategori yang berbeda.', 'error');
+                    return;
+                }
                 $result = $expenseCategory->update($id, $data);
                 if ($result) {
                     $this->redirect('expense-categories', 'Kategori pengeluaran berhasil diperbarui!', 'success');

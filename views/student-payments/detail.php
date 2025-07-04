@@ -464,7 +464,7 @@ $custom_js = "
         $('#assignmentsTable').DataTable({
             responsive: true,
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
+                url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
             },
             paging: false, // Often for detail pages, you don't need pagination
             info: false,   // And often no info text
@@ -484,7 +484,7 @@ $custom_js = "
         $('#historyTable').DataTable({
             responsive: true,
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
+                url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
             },
             paging: true,
             info: true,

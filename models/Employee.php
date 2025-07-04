@@ -3,6 +3,26 @@
 class Employee extends BaseModel {
     protected $table_name = "m_pegawai";
     
+    public function isExists($niy, $excludeId = null) {
+        $query = "SELECT COUNT(*) as count FROM " . $this->table_name . " WHERE nip = :nip";
+        
+        if ($excludeId) {
+            $query .= " AND id != :exclude_id";
+        }
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':nip', $niy);
+        
+        if ($excludeId) {
+            $stmt->bindValue(':exclude_id', $excludeId);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return $result['count'] > 0;
+    }
+
     public function getEmployeesWithDetails() {
         $query = "SELECT p.*, j.nama_jabatan, u.username 
                   FROM " . $this->table_name . " p 

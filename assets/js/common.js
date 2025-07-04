@@ -12,7 +12,7 @@ $(document).ready(() => {
   if ($.fn.DataTable) {
     $.extend(true, $.fn.dataTable.defaults, {
       language: {
-        url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/id.json",
+        url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/id.json",
       },
       pageLength: 25,
       responsive: true,

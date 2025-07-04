@@ -9,6 +9,28 @@ class DataPembayaran extends BaseModel {
         parent::__construct($db);
     }
     
+    public function isExists($nama_pembayaran, $excludeId = null) {
+        $nama_pembayaran_cleaned = str_replace(' ', '', $nama_pembayaran);
+
+        $query = "SELECT COUNT(*) as count FROM " . $this->table_name . " WHERE REPLACE(nama_pembayaran, ' ', '') = :nama_pembayaran_cleaned";
+
+        if ($excludeId) {
+            $query .= " AND id != :exclude_id";
+        }
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':nama_pembayaran_cleaned', $nama_pembayaran_cleaned);
+
+        if ($excludeId) {
+            $stmt->bindValue(':exclude_id', $excludeId);
+        }
+
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $result['count'] > 0;
+    }
+
     public function getAll() {
         $query = "SELECT dp.*, jp.nama_pembayaran as jenis_nama, jp.tipe, jp.kode_pembayaran, ta.tahun_ajaran 
                   FROM " . $this->table_name . " dp

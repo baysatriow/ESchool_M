@@ -8,6 +8,26 @@ class IncomeCategory extends BaseModel {
         parent::__construct($db);
     }
     
+    public function isExists($nama_kategori, $excludeId = null) {
+        $query = "SELECT COUNT(*) as count FROM " . $this->table_name . " WHERE nama_kategori = :nama_kategori";
+        
+        if ($excludeId) {
+            $query .= " AND id != :exclude_id";
+        }
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':nama_kategori', $nama_kategori);
+        
+        if ($excludeId) {
+            $stmt->bindValue(':exclude_id', $excludeId);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return $result['count'] > 0;
+    }
+
     public function getIncomeCategoriesWithStats() {
         $query = "SELECT kp.*, 
                          COALESCE(COUNT(p.id), 0) as total_transaksi,

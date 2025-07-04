@@ -102,7 +102,7 @@
                                                 case 'alumni':
                                                     $status_badge_class = 'primary'; // Added primary for 'Alumni'
                                                     break;
-                                                case 'naik kelas':
+                                                case 'naik_kelas':
                                                     $status_badge_class = 'dark'; // Added dark for 'Naik Kelas'
                                                     break;
                                             }
@@ -210,8 +210,8 @@
                                         <option value="lulus">Lulus</option>
                                         <option value="pindah">Pindah</option>
                                         <option value="dikeluarkan">Dikeluarkan</option>
-                                        <option value="alumni">Alumni</option>
-                                        <option value="naik kelas">Naik Kelas</option>
+                                        <option value="ALUMNI">Alumni</option>
+                                        <option value="naik_kelas">Naik Kelas</option>
                                     </select>
                                 </div>
                             </div>
@@ -302,8 +302,8 @@
                                         <option value="lulus">Lulus</option>
                                         <option value="pindah">Pindah</option>
                                         <option value="dikeluarkan">Dikeluarkan</option>
-                                        <option value="alumni">Alumni</option>
-                                        <option value="naik kelas">Naik Kelas</option>
+                                        <option value="ALUMNI">Alumni</option>
+                                        <option value="naik_kelas">Naik Kelas</option>
                                     </select>
                                 </div>
                             </div>
@@ -326,7 +326,7 @@ $custom_js = "
             $('#datatable').DataTable({
                 responsive: true,
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
+                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
                 },
                 columnDefs: [
                     { responsivePriority: 1, targets: 0 },    // No

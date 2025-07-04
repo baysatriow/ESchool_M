@@ -57,9 +57,10 @@ if (!function_exists('asset_path_footer')) {
 <script src="<?php echo asset_path_footer('assets/libs/izitoast/js/iziToast.min.js'); ?>"></script>
 
 <?php if (isset($additional_js)): ?>
-    <?php foreach ($additional_js as $js): ?>
-        <script src="<?php echo $js; ?>"></script>
-    <?php endforeach; ?>
+<script src="<?php echo asset_path_footer('assets/libs/datatables.net/js/jquery.dataTables.min.js'); ?>"></script>
+<script src="<?php echo asset_path_footer('assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js'); ?>"></script>
+<script src="<?php echo asset_path_footer('assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js'); ?>"></script>
+<script src="<?php echo asset_path_footer('assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js'); ?>"></script>
 <?php endif; ?>
 
 <!-- Flash Messages with iziToast -->

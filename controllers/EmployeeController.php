@@ -24,16 +24,8 @@ class EmployeeController extends BaseController {
             'employees' => $employees,
             'positions' => $positions,
             'users' => $users,
-            'additional_css' => [
-                'assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css',
-                'assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css'
-            ],
-            'additional_js' => [
-                'assets/libs/datatables.net/js/jquery.dataTables.min.js',
-                'assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js',
-                'assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js',
-                'assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js'
-            ]
+            'additional_css' => 1,
+            'additional_js' => 1
         ];
         
         $this->view('employees/index', $data);
@@ -58,8 +50,9 @@ class EmployeeController extends BaseController {
         $data = [
             'page_title' => 'Detail Pegawai - ' . $employee_data['nama_lengkap'],
             'employee' => $employee_data,
-            'attendance_history' => $attendance_history
-            // 'payroll_history' => $payroll_history
+            'attendance_history' => $attendance_history,
+            'additional_css' => 1,
+            'additional_js' => 1
         ];
         
         $this->view('employees/detail', $data);
@@ -84,6 +77,11 @@ class EmployeeController extends BaseController {
             ];
             
             try {
+                if ($employee->isExists($data['nip'])) {
+                    $this->redirect('employees', 'Nomor Induk Yayasan ' . $data['nip'] . ' sudah ada! Silakan gunakan NIY yang berbeda.', 'error');
+                    return;
+                }
+
                 $result = $employee->create($data);
                 if ($result) {
                     $this->redirect('employees', 'Data pegawai berhasil ditambahkan!', 'success');
@@ -116,6 +114,11 @@ class EmployeeController extends BaseController {
             ];
             
             try {
+                if ($employee->isExists($data['nip'], $id)) {
+                    $this->redirect('employees', 'Nomor Induk Yayasan ' . $data['nip'] . ' sudah ada! Silakan gunakan NIY yang berbeda.', 'error');
+                    return;
+                }
+
                 $result = $employee->update($id, $data);
                 if ($result) {
                     $this->redirect('employees', 'Data pegawai berhasil diperbarui!', 'success');

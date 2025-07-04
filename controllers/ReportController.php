@@ -1,4 +1,5 @@
 <?php
+
 require_once 'controllers/BaseController.php';
 require_once 'models/Payment.php';
 require_once 'models/Expense.php';
@@ -25,7 +26,9 @@ class ReportController extends BaseController {
             'page_title' => 'Laporan Keuangan Sekolah',
             'financial_data' => $financial_data,
             'start_date' => $start_date,
-            'end_date' => $end_date
+            'end_date' => $end_date,
+            'additional_css' => 1,
+            'additional_js' => 1
         ];
         
         $this->view('reports/financial', $data);
@@ -33,17 +36,18 @@ class ReportController extends BaseController {
     
     public function arrears() {
         $kelas_id = $_GET['kelas_id'] ?? '';
+        $status_filter = $_GET['status_filter'] ?? 'menunggak'; // Default to show arrears only
         $export = $_GET['export'] ?? null;
         
         // Get arrears data
-        $arrears_data = $this->getArrearsData($kelas_id);
+        $arrears_data = $this->getArrearsData($kelas_id, $status_filter);
         
         // Get classes for filter
         $classes = $this->getClasses();
         
         // If export is requested
         if ($export === 'excel') {
-            $this->exportArrearsToExcel($arrears_data, $kelas_id);
+            $this->exportArrearsToExcel($arrears_data, $kelas_id, $status_filter);
             return;
         }
         
@@ -52,16 +56,9 @@ class ReportController extends BaseController {
             'arrears_data' => $arrears_data,
             'classes' => $classes,
             'selected_kelas' => $kelas_id,
-            'additional_css' => [
-                'assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css',
-                'assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css'
-            ],
-            'additional_js' => [
-                'assets/libs/datatables.net/js/jquery.dataTables.min.js',
-                'assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js',
-                'assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js',
-                'assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js'
-            ]
+            'selected_status' => $status_filter,
+            'additional_css' => 1,
+            'additional_js' => 1
         ];
         
         $this->view('reports/arrears', $data);
@@ -147,13 +144,28 @@ class ReportController extends BaseController {
         ];
     }
     
-    private function getArrearsData($kelas_id = '') {
+    private function getArrearsData($kelas_id = '', $status_filter = 'menunggak') {
         $where_clause = '';
+        $having_clause = '';
         $params = [];
         
         if (!empty($kelas_id)) {
             $where_clause = 'AND s.kelas_id = :kelas_id';
             $params[':kelas_id'] = $kelas_id;
+        }
+        
+        // Add status filter
+        switch ($status_filter) {
+            case 'menunggak':
+                $having_clause = 'HAVING tunggakan > 0';
+                break;
+            case 'lancar':
+                $having_clause = 'HAVING tunggakan = 0 AND total_tagihan > 0';
+                break;
+            case 'semua':
+            default:
+                $having_clause = 'HAVING total_tagihan > 0';
+                break;
         }
         
         $query = "SELECT 
@@ -165,12 +177,6 @@ class ReportController extends BaseController {
                      SUM(CASE WHEN aps.status_pembayaran = 'sudah_bayar' THEN 1 ELSE 0 END) as sudah_bayar,
                      SUM(CASE WHEN aps.status_pembayaran = 'belum_bayar' 
                               AND dp.batas_waktu < CURDATE() THEN 1 ELSE 0 END) as tunggakan,
-                     GROUP_CONCAT(
-                         CASE WHEN aps.status_pembayaran = 'belum_bayar' 
-                              AND dp.batas_waktu < CURDATE() 
-                         THEN CONCAT(dp.nama_pembayaran, ' (', DATE_FORMAT(dp.batas_waktu, '%d/%m/%Y'), ')')
-                         END SEPARATOR '; '
-                     ) as detail_tunggakan,
                      SUM(CASE WHEN aps.status_pembayaran = 'belum_bayar' 
                               AND dp.batas_waktu < CURDATE() 
                          THEN aps.nominal_yang_harus_dibayar ELSE 0 END) as total_nominal_tunggakan
@@ -178,14 +184,53 @@ class ReportController extends BaseController {
                   LEFT JOIN m_kelas k ON s.kelas_id = k.id
                   LEFT JOIN t_assign_pembayaran_siswa aps ON s.id = aps.siswa_id
                   LEFT JOIN m_data_pembayaran dp ON aps.data_pembayaran_id = dp.id
-                  WHERE s.status = 'aktif' {$where_clause}
+                  WHERE s.status IN ('aktif','lulus','pindah','dikeluarkan','ALUMNI','naik_kelas') {$where_clause}
                   GROUP BY s.id
-                  HAVING total_tagihan > 0
+                  {$having_clause}
                   ORDER BY tunggakan DESC, s.nama_lengkap";
         
         $stmt = $this->db->prepare($query);
         $stmt->execute($params);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Get detailed arrears information for each student
+        foreach ($results as &$row) {
+            $row['detail_tunggakan'] = $this->getDetailedArrears($row['siswa_id']);
+        }
+        
+        return $results;
+    }
+    
+    private function getDetailedArrears($siswa_id) {
+        $query = "SELECT 
+                     dp.nama_pembayaran,
+                     dp.batas_waktu,
+                     aps.nominal_yang_harus_dibayar as nominal
+                  FROM t_assign_pembayaran_siswa aps
+                  JOIN m_data_pembayaran dp ON aps.data_pembayaran_id = dp.id
+                  WHERE aps.siswa_id = :siswa_id 
+                    AND aps.status_pembayaran = 'belum_bayar'
+                    AND dp.batas_waktu < CURDATE()
+                  ORDER BY dp.batas_waktu ASC";
+        
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':siswa_id', $siswa_id);
+        $stmt->execute();
+        $details = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Format the data for display
+        $formatted_details = [];
+        foreach ($details as $detail) {
+            $formatted_details[] = [
+                'nama_pembayaran' => $detail['nama_pembayaran'],
+                'batas_waktu' => $detail['batas_waktu'],
+                'batas_waktu_formatted' => date('d/m/Y', strtotime($detail['batas_waktu'])),
+                'nominal' => $detail['nominal'],
+                'nominal_formatted' => number_format($detail['nominal'], 0, ',', '.')
+            ];
+        }
+        
+        return $formatted_details;
     }
     
     private function getClasses() {
@@ -444,7 +489,7 @@ class ReportController extends BaseController {
         ];
     }
     
-    private function exportArrearsToExcel($arrears_data, $kelas_id) {
+    private function exportArrearsToExcel($arrears_data, $kelas_id, $status_filter) {
         $exporter = new ExcelExporter();
         
         // Get class name for filename
@@ -458,6 +503,20 @@ class ReportController extends BaseController {
             }
         }
         
+        // Status name for filename
+        $status_name = '';
+        switch ($status_filter) {
+            case 'menunggak':
+                $status_name = 'Menunggak';
+                break;
+            case 'lancar':
+                $status_name = 'Lancar';
+                break;
+            case 'semua':
+                $status_name = 'Semua';
+                break;
+        }
+        
         // Prepare data for export
         $export_data = [];
         
@@ -465,6 +524,7 @@ class ReportController extends BaseController {
         $export_data[] = ['LAPORAN TUNGGAKAN SISWA'];
         $export_data[] = ['Tanggal: ' . date('d/m/Y')];
         $export_data[] = ['Kelas: ' . ($kelas_name === 'Semua_Kelas' ? 'Semua Kelas' : str_replace('_', ' ', $kelas_name))];
+        $export_data[] = ['Status: ' . $status_name];
         $export_data[] = [''];
         
         // Add table header
@@ -473,6 +533,15 @@ class ReportController extends BaseController {
         // Add data
         $no = 1;
         foreach ($arrears_data as $row) {
+            $detail_text = '';
+            if (!empty($row['detail_tunggakan'])) {
+                $details = [];
+                foreach ($row['detail_tunggakan'] as $detail) {
+                    $details[] = $detail['nama_pembayaran'] . ' (' . $detail['batas_waktu_formatted'] . ')';
+                }
+                $detail_text = implode('; ', $details);
+            }
+            
             $export_data[] = [
                 $no++,
                 "'" . $row['nis'],
@@ -482,56 +551,11 @@ class ReportController extends BaseController {
                 $row['sudah_bayar'],
                 $row['tunggakan'],
                 'Rp ' . number_format($row['total_nominal_tunggakan'], 0, ',', '.'),
-                $row['detail_tunggakan'] ?: 'Tidak ada tunggakan'
+                $detail_text ?: 'Tidak ada tunggakan'
             ];
         }
         
-        $filename = 'Laporan_Tunggakan_' . $kelas_name . '_' . date('Y-m-d');
+        $filename = 'Laporan_Tunggakan_' . $status_name . '_' . $kelas_name . '_' . date('Y-m-d');
         $exporter->exportToExcel($export_data, $filename);
-    }
-    
-    public function salary() {
-        $month = $_GET['month'] ?? date('m');
-        $year = $_GET['year'] ?? date('Y');
-        
-        // Get attendance data for salary calculation
-        $query = "SELECT p.*, j.nama_jabatan,
-                         COUNT(pp.id) as total_hadir,
-                         SUM(CASE WHEN pp.status_kehadiran = 'hadir' THEN 1 ELSE 0 END) as hadir,
-                         SUM(CASE WHEN pp.status_kehadiran = 'izin' THEN 1 ELSE 0 END) as izin,
-                         SUM(CASE WHEN pp.status_kehadiran = 'sakit' THEN 1 ELSE 0 END) as sakit,
-                         SUM(CASE WHEN pp.status_kehadiran = 'alpa' THEN 1 ELSE 0 END) as alpha
-                  FROM m_pegawai p
-                  LEFT JOIN m_jabatan j ON p.jabatan_id = j.id
-                  LEFT JOIN t_presensi_pegawai pp ON p.id = pp.pegawai_id 
-                       AND MONTH(pp.tanggal) = :month AND YEAR(pp.tanggal) = :year
-                  WHERE p.status = 'aktif'
-                  GROUP BY p.id
-                  ORDER BY p.nama_lengkap";
-        
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':month', $month);
-        $stmt->bindValue(':year', $year);
-        $stmt->execute();
-        $salary_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        $data = [
-            'page_title' => 'Laporan Gaji Pegawai',
-            'salary_data' => $salary_data,
-            'month' => $month,
-            'year' => $year,
-            'additional_css' => [
-                'assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css',
-                'assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css'
-            ],
-            'additional_js' => [
-                'assets/libs/datatables.net/js/jquery.dataTables.min.js',
-                'assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js',
-                'assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js',
-                'assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js'
-            ]
-        ];
-        
-        $this->view('reports/salary', $data);
     }
 }

@@ -1,6 +1,20 @@
 <?php include 'includes/header.php'; ?>
 <?php include 'includes/sidebar.php'; ?>
+<style>
 
+    .table-responsive {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #e9ecef; 
+    }
+    .card-body .table thead th {
+        position: sticky;
+        top: 0;
+        background-color: #f8f9fa;
+        z-index: 10;
+        border-bottom: 1px solid #dee2e6;
+    }
+</style>
 <div class="main-content">
     <div class="page-content">
         <div class="container-fluid">
@@ -19,7 +33,6 @@
                 </div>
             </div>
 
-            <!-- Filter Form -->
             <div class="row">
                 <div class="col-12">
                     <div class="card">
@@ -43,10 +56,7 @@
                                             <button type="button" class="btn btn-success" onclick="exportToExcel()">
                                                 <i class="mdi mdi-file-excel"></i> Export Excel
                                             </button>
-                                            <!-- <button type="button" class="btn btn-info" onclick="printReport()">
-                                                <i class="mdi mdi-printer"></i> Print
-                                            </button> -->
-                                        </div>
+                                            </div>
                                     </div>
                                 </div>
                             </form>
@@ -55,7 +65,6 @@
                 </div>
             </div>
 
-            <!-- Summary Cards -->
             <div class="row">
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-success-subtle">
@@ -130,9 +139,7 @@
                 </div>
             </div>
 
-            <!-- Detailed Report -->
             <div class="row">
-                <!-- Income Details -->
                 <div class="col-md-4">
                     <div class="card">
                         <div class="card-header">
@@ -140,7 +147,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-sm">
+                                <table id="incomeDataTable" class="table table-hover table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                     <thead>
                                         <tr>
                                             <th>Tanggal</th>
@@ -170,7 +177,6 @@
                     </div>
                 </div>
                 
-                <!-- Payment Details -->
                 <div class="col-md-4">
                     <div class="card">
                         <div class="card-header">
@@ -178,7 +184,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-sm">
+                                <table id="paymentDataTable" class="table table-hover table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                     <thead>
                                         <tr>
                                             <th>Tanggal</th>
@@ -208,7 +214,6 @@
                     </div>
                 </div>
                 
-                <!-- Expense Details -->
                 <div class="col-md-4">
                     <div class="card">
                         <div class="card-header">
@@ -216,7 +221,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-sm">
+                                <table id="expenseDataTable" class="table table-hover table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                     <thead>
                                         <tr>
                                             <th>Tanggal</th>
@@ -252,6 +257,42 @@
 
 <?php 
 $custom_js = "
+    $(document).ready(function() {
+        // Initialize DataTables for each report table
+        $('#incomeDataTable').DataTable({
+            responsive: true,
+            searching: false, // Disable search for these smaller tables
+            paging: true,    // Enable pagination
+            info: false,     // Disable info text (e.g., 'Showing 1 to 10 of X entries')
+            order: [[0, 'desc']], // Order by date descending
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
+            }
+        });
+
+        $('#paymentDataTable').DataTable({
+            responsive: true,
+            searching: false,
+            paging: true,
+            info: false,
+            order: [[0, 'desc']],
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
+            }
+        });
+
+        $('#expenseDataTable').DataTable({
+            responsive: true,
+            searching: false,
+            paging: true,
+            info: false,
+            order: [[0, 'desc']],
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
+            }
+        });
+    });
+
     function exportToExcel() {
         const form = document.getElementById('filterForm');
         const formData = new FormData(form);
@@ -261,9 +302,9 @@ $custom_js = "
         window.location.href = '" . Router::url('financial-reports') . "?' + params.toString();
     }
     
-    function printReport() {
-        window.print();
-    }
+    // function printReport() {
+    //     window.print();
+    // }
 ";
 
 include 'includes/footer.php'; 

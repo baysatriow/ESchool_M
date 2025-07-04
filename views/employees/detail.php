@@ -1,5 +1,28 @@
 <?php include 'includes/header.php'; ?>
 <?php include 'includes/sidebar.php'; ?>
+<style>
+    .table-responsive table th,
+    .table-responsive table td {
+        white-space: normal; /* Allow all table cells to wrap text */
+    }
+    /* Specific width adjustments for better responsiveness on small columns */
+    .table-responsive table th:nth-child(1),
+    .table-responsive table td:nth-child(1) {
+        width: 50px; /* Adjust width for 'No' column */
+    }
+    .table-responsive table th:last-child,
+    .table-responsive table td:last-child {
+        width: 150px; /* Adjust width for 'Aksi' column */
+        white-space: nowrap; /* Prevent buttons from wrapping */
+    }
+    /* Ensure action buttons are compact */
+    .table-responsive .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        line-height: 1.5;
+        border-radius: 0.2rem;
+    }
+</style>
 
 <div class="main-content">
     <div class="page-content">
@@ -124,20 +147,16 @@
                                         <i class="fas fa-clock"></i> Presensi (30 hari terakhir)
                                     </a>
                                 </li>
-                                <!-- <li class="nav-item">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#payroll" role="tab">
-                                        <i class="fas fa-money-check-alt"></i> Riwayat Gaji
-                                    </a>
-                                </li> -->
-                            </ul>
+                                </ul>
                         </div>
                         <div class="card-body">
                             <div class="tab-content">
                                 <div class="tab-pane active" id="attendance" role="tabpanel">
                                     <div class="table-responsive">
-                                        <table class="table table-hover table-bordered mb-0">
+                                        <table id="attendanceHistoryTable" class="table table-hover table-bordered table-striped dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                             <thead>
                                                 <tr>
+                                                    <th>No</th>
                                                     <th>Tanggal</th>
                                                     <th>Status</th>
                                                     <th>Jam Masuk</th>
@@ -148,11 +167,12 @@
                                             <tbody>
                                                 <?php if (empty($attendance_history)): ?>
                                                 <tr>
-                                                    <td colspan="5" class="text-center text-muted py-3">Belum ada data presensi untuk 30 hari terakhir.</td>
+                                                    <td colspan="6" class="text-center text-muted py-3">Belum ada data presensi untuk 30 hari terakhir.</td>
                                                 </tr>
                                                 <?php else: ?>
-                                                <?php foreach ($attendance_history as $attendance): ?>
+                                                <?php foreach ($attendance_history as $index => $attendance): ?>
                                                 <tr>
+                                                    <td><?php echo $index + 1; ?></td>
                                                     <td><?php echo date('d/m/Y', strtotime($attendance['tanggal'])); ?></td>
                                                     <td>
                                                         <?php
@@ -189,7 +209,26 @@
 </div>
 
 <?php
-$custom_js = ""; // No custom JavaScript needed for Select2 on this page based on current elements
+$custom_js = "
+    $(document).ready(function() {
+        // Initialize DataTable for Attendance History
+        $('#attendanceHistoryTable').DataTable({
+            responsive: true,
+            order: [[0, 'desc']], // Order by date descending initially
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
+            },
+            columnDefs: [
+                { responsivePriority: 1, targets: 0 }, // No
+                { responsivePriority: 2, targets: 1 }, // Tanggal
+                { responsivePriority: 3, targets: 2 }, // Status
+                { responsivePriority: 4, targets: 3 }, // Jam Masuk
+                { responsivePriority: 5, targets: 4 }, // Jam Pulang
+                { responsivePriority: 6, targets: 5 }  // Keterangan
+            ]
+        });
+    });
+";
 
 include 'includes/footer.php';
 ?>

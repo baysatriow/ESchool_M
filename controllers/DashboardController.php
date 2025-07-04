@@ -71,16 +71,8 @@ class DashboardController extends BaseController {
             'recent_transactions' => $recent_transactions,
             'outstanding_payments' => $outstanding_payments,
             'yearly_comparison' => $yearly_comparison,
-            'additional_css' => [
-                'assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css',
-                'assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css'
-            ],
-            'additional_js' => [
-                'assets/libs/datatables.net/js/jquery.dataTables.min.js',
-                'assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js',
-                'assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js',
-                'assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js',
-            ]
+            'additional_css' => 1,
+            'additional_js' => 1
         ];
 
         $this->view('dashboard/index', $data);
@@ -151,7 +143,7 @@ class DashboardController extends BaseController {
                     COUNT(CASE WHEN aps.status_pembayaran = 'belum_bayar' THEN 1 END) as belum_bayar
                   FROM t_assign_pembayaran_siswa aps
                   JOIN m_siswa s ON aps.siswa_id = s.id
-                  WHERE s.status = 'aktif'";
+                  WHERE s.status IN ('aktif','lulus','pindah','dikeluarkan','ALUMNI','naik_kelas')";
         
         $stmt = $this->db->prepare($query);
         $stmt->execute();
@@ -310,7 +302,7 @@ class DashboardController extends BaseController {
                   JOIN m_siswa s ON aps.siswa_id = s.id
                   LEFT JOIN m_kelas k ON s.kelas_id = k.id
                   JOIN m_data_pembayaran dp ON aps.data_pembayaran_id = dp.id
-                  WHERE s.status = 'aktif' 
+                  WHERE s.status IN ('aktif', 'naik_kelas') 
                     AND aps.status_pembayaran IN ('belum_bayar', 'sebagian')
                     AND dp.batas_waktu < CURRENT_DATE
                     AND (aps.nominal_yang_harus_dibayar - aps.nominal_yang_sudah_dibayar) > 0

@@ -27,7 +27,7 @@ class AssignPembayaran extends BaseModel {
         $query = "SELECT s.*, k.nama_kelas 
                   FROM m_siswa s
                   LEFT JOIN m_kelas k ON s.kelas_id = k.id
-                  WHERE s.status = 'aktif'";
+                  WHERE s.status IN ('aktif', 'naik_kelas')";
         
         $params = [];
         

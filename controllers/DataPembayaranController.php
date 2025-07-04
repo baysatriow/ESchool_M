@@ -25,16 +25,8 @@ class DataPembayaranController extends BaseController {
             'data_pembayaran' => $data_pembayaran,
             'payment_types' => $payment_types,
             'academic_years' => $academic_years,
-            'additional_css' => [
-                'assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css',
-                'assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css'
-            ],
-            'additional_js' => [
-                'assets/libs/datatables.net/js/jquery.dataTables.min.js',
-                'assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js',
-                'assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js',
-                'assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js'
-            ]
+            'additional_css' => 1,
+            'additional_js' => 1
         ];
         
         $this->view('data-pembayaran/index', $data);
@@ -62,6 +54,11 @@ class DataPembayaranController extends BaseController {
                 
                 if ($jenisData && $jenisData['tipe'] === 'bulanan' && isset($_POST['generate_monthly'])) {
                     // Generate monthly payments
+                    if ($dataPembayaran->isExists($data['nama_pembayaran'])) {
+                        $this->redirect('data-pembayaran', 'Nama Pembayaran ' . $data['nama_pembayaran'] . ' sudah ada! Silakan gunakan nama pembayaran yang berbeda.', 'error');
+                        return;
+                    }
+                    
                     $result = $dataPembayaran->generateMonthlyPayments(
                         $data['jenis_pembayaran_id'],
                         $data['tahun_ajaran_id'],
@@ -79,8 +76,11 @@ class DataPembayaranController extends BaseController {
                     }
                 } else {
                     // Create single payment
+                    if ($dataPembayaran->isExists($data['nama_pembayaran'])) {
+                        $this->redirect('data-pembayaran', 'Nama Pembayaran ' . $data['nama_pembayaran'] . ' sudah ada! Silakan gunakan nama pembayaran yang berbeda.', 'error');
+                        return;
+                    }
                     $result = $dataPembayaran->create($data);
-                    
                     if ($result) {
                         $this->redirect('data-pembayaran', 'Data pembayaran berhasil ditambahkan', 'success');
                     } else {
@@ -111,7 +111,10 @@ class DataPembayaranController extends BaseController {
                     'dapat_dicicil' => isset($_POST['dapat_dicicil']) ? 1 : 0,
                     'maksimal_cicilan' => $_POST['maksimal_cicilan'] ?? 1
                 ];
-                
+                if ($dataPembayaran->isExists($data['nama_pembayaran'], $_POST['id'])) {
+                    $this->redirect('data-pembayaran', 'Nama Pembayaran ' . $data['nama_pembayaran'] . ' sudah ada! Silakan gunakan nama pembayaran yang berbeda.', 'error');
+                    return;
+                }
                 $result = $dataPembayaran->update($_POST['id'], $data);
                 
                 if ($result) {

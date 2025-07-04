@@ -452,7 +452,7 @@ function terbilang($angka) {
             <div class="print-info">
                 <small>
                     <i class="fas fa-calendar mr-1"></i>Dicetak pada: <?= date('d F Y H:i:s') ?> | 
-                    <i class="fas fa-desktop mr-1"></i>Sistem Informasi Sekolah v2.0
+                    <i class="fas fa-desktop mr-1"></i>Sistem Keuangan Sekolah v1.0
                 </small>
             </div>
         </div>

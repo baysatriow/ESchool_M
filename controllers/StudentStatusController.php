@@ -33,19 +33,8 @@ class StudentStatusController extends BaseController {
             'status_options' => $status_options,
             'statistics' => $statistics,
             'recent_changes' => $recent_changes,
-            'additional_css' => [
-                'assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css',
-                'assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css',
-                'assets/libs/select2/css/select2.min.css',
-                'assets/libs/select2/css/select2-bootstrap4.min.css'
-            ],
-            'additional_js' => [
-                'assets/libs/datatables.net/js/jquery.dataTables.min.js',
-                'assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js',
-                'assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js',
-                'assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js',
-                'assets/libs/select2/js/select2.min.js'
-            ]
+            'additional_css' => 1,
+            'additional_js' => 1
         ];
         
         $this->view('student-status/index', $data);
@@ -119,19 +108,8 @@ class StudentStatusController extends BaseController {
             'page_title' => 'Riwayat Perubahan Status & Kelas',
             'history' => $history,
             'student_data' => $student_data,
-            'additional_css' => [
-                'assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css',
-                'assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css',
-                'assets/libs/select2/css/select2.min.css',
-                'assets/libs/select2/css/select2-bootstrap4.min.css'
-            ],
-            'additional_js' => [
-                'assets/libs/datatables.net/js/jquery.dataTables.min.js',
-                'assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js',
-                'assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js',
-                'assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js',
-                'assets/libs/select2/js/select2.min.js'
-            ]
+            'additional_css' => 1,
+            'additional_js' => 1
         ];
         
         $this->view('student-status/history', $data);

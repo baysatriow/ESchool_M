@@ -323,7 +323,7 @@
                                         <option value="">Pilih Kelas</option>
                                         <?php if (!empty($classes)): ?>
                                             <?php foreach ($classes as $class): ?>
-                                            <option value="<?php echo htmlspecialchars($class['id']); ?>">
+                                            <option value="<?php echo htmlspecialchars($class['id']); ?>" data-nama-kelas="<?php echo htmlspecialchars($class['nama_kelas']); ?>">
                                                 <?php echo htmlspecialchars($class['nama_kelas']); ?>
                                             </option>
                                             <?php endforeach; ?>
@@ -359,7 +359,7 @@ $custom_js = "
         $('#datatable').DataTable({
             responsive: true,
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
+                url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
             },
             columnDefs: [
                 { orderable: false, targets: [0, 6] }, // Disable sorting for checkbox and Aksi columns
@@ -432,8 +432,34 @@ $custom_js = "
             validateStatusClass(); 
         });
 
-        // Status/Class change validation in modal
-        $('#status_baru, #kelas_id_new').change(function() {
+        // Status change listener to auto-select class for specific statuses
+        $('#status_baru').change(function() {
+            const selectedStatus = $(this).val();
+            let targetClassId = '';
+
+            // Dynamically find class IDs based on their name, trimming whitespace
+            const alumniClassOption = $('option[data-nama-kelas]').filter(function() {
+                return $.trim($(this).data('nama-kelas')) === 'ALUMNI';
+            });
+            const mutasiClassOption = $('option[data-nama-kelas]').filter(function() {
+                return $.trim($(this).data('nama-kelas')) === 'MUTASI';
+            });
+
+            const alumniClassId = alumniClassOption.val();
+            const mutasiClassId = mutasiClassOption.val();
+
+            if (selectedStatus === 'lulus' || selectedStatus === 'ALUMNI') {
+                targetClassId = alumniClassId; 
+            } else if (selectedStatus === 'pindah' || selectedStatus === 'dikeluarkan') {
+                targetClassId = mutasiClassId; 
+            }
+            
+            $('#kelas_id_new').val(targetClassId).trigger('change');
+            validateStatusClass();
+        });
+        
+        // Class change listener for validation
+        $('#kelas_id_new').change(function() {
             validateStatusClass();
         });
         
@@ -567,7 +593,7 @@ $custom_js = "
         }
         
         // Client-side validation rules
-        const noClassStatuses = ['lulus', 'pindah', 'dikeluarkan', 'alumni']; // Added 'alumni' here
+        const noClassStatuses = ['lulus', 'pindah', 'dikeluarkan', 'alumni']; 
         const requireClassStatuses = ['aktif', 'naik_kelas']; 
         
         // Special case: if status is 'naik_kelas', it must have a new class
@@ -576,10 +602,20 @@ $custom_js = "
             return;
         }
 
-        // If status requires no class, but a class is selected
+        // Get the selected class name from the data attribute, trimming whitespace
+        const selectedClassName = $.trim($('#kelas_id_new option:selected').data('nama-kelas'));
+
+        // If status requires no class, but a class is selected AND it's not the designated special class
         if (noClassStatuses.includes(status) && classId) {
-            validationMessageDiv.text('Status \"' + status + '\" tidak memerlukan pilihan kelas. Mohon kosongkan pilihan kelas.').show();
-            return;
+            let expectedClass = '';
+            if (status === 'lulus' || status === 'alumni') expectedClass = 'ALUMNI';
+            else if (status === 'pindah' || status === 'dikeluarkan') expectedClass = 'MUTASI';
+            
+            // Check if the selected class is NOT the expected special class
+            if (selectedClassName !== expectedClass) {
+                validationMessageDiv.text('Status \"' + status + '\" harus memiliki kelas \"' + expectedClass + '\". Mohon sesuaikan pilihan kelas.').show();
+                return;
+            }
         }
         
         // If status requires a class, but no class is selected (excluding 'naik_kelas' which is handled above)

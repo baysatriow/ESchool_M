@@ -146,7 +146,7 @@ $custom_js = "
             $('#datatable').DataTable({
                 responsive: true,
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
+                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
                 },
                 // Add these options to help with long content in responsive mode
                 // You might need to adjust columnDefs based on actual column indices

@@ -17,16 +17,8 @@ class StudentController extends BaseController {
             'page_title' => 'Data Siswa',
             'students' => $students,
             'classes' => $classes,
-            'additional_css' => [
-                'assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css',
-                'assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css'
-            ],
-            'additional_js' => [
-                'assets/libs/datatables.net/js/jquery.dataTables.min.js',
-                'assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js',
-                'assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js',
-                'assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js'
-            ]
+            'additional_css' => 1,
+            'additional_js' => 1
         ];
         
         $this->view('students/index', $data);
@@ -59,7 +51,9 @@ class StudentController extends BaseController {
             'page_title' => 'Detail Siswa - ' . $student_data['nama_lengkap'],
             'student' => $student_data,
             'payment_history' => $payment_history,
-            'status_history' => $status_history
+            'status_history' => $status_history,
+            'additional_css' => 1,
+            'additional_js' => 1
         ];
         
         $this->view('students/detail', $data);
@@ -116,7 +110,7 @@ class StudentController extends BaseController {
             
             try {
                 if ($student->isExists($data['nis'], $id)) {
-                    $this->redirect('students', 'Nomor Induk Yayasan ' . $data['nis'] . ' sudah ada! Silakan gunakan NIY yang berbeda.', 'error');
+                    $this->redirect('students', 'Nomor Induk Siswa ' . $data['nis'] . ' sudah ada! Silakan gunakan NIS yang berbeda.', 'error');
                     return;
                 }
                 $result = $student->update($id, $data);

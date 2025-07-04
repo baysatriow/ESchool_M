@@ -24,7 +24,7 @@ class Payment extends BaseModel {
                   LEFT JOIN m_data_pembayaran dp ON aps.data_pembayaran_id = dp.id";
         
         $params = [];
-        $conditions = ["s.status IN ('aktif', 'naik_kelas')"];
+        $conditions = ["s.status IN ('aktif','lulus','pindah','dikeluarkan','ALUMNI','naik_kelas')"];
         
         if (!empty($filters['tahun_ajaran_id'])) {
             $conditions[] = "(aps.data_pembayaran_id IS NULL OR dp.tahun_ajaran_id = :tahun_ajaran_id)";

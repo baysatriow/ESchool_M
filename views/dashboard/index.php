@@ -1,6 +1,32 @@
 <?php include 'includes/header.php'; ?>
 <?php include 'includes/sidebar.php'; ?>
 
+<style>
+    .card .dataTables_wrapper .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    .card .dataTables_wrapper .col-sm-12 {
+        padding-left: 0;
+        padding-right: 0;
+    }
+    .table-responsive .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        line-height: 1.5;
+        border-radius: 0.2rem;
+    }
+    .table-responsive table th,
+    .table-responsive table td {
+        white-space: normal;
+    }
+   
+    .table-responsive table th:first-child,
+    .table-responsive table td:first-child {
+        width: 50px;
+    }
+</style>
+
 <div class="main-content">
     <div class="page-content">
         <div class="container-fluid">
@@ -21,7 +47,6 @@
                 </div>
             </div>
 
-            <!-- Statistics Cards -->
             <div class="row">
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-primary-subtle">
@@ -88,7 +113,6 @@
                 </div>
             </div>
 
-            <!-- Net Income Card -->
             <div class="row">
                 <div class="col-xl-4">
                     <div class="card <?php echo $net_income >= 0 ? 'bg-success-subtle' : 'bg-danger-subtle'; ?>">
@@ -107,9 +131,7 @@
                 </div>
             </div>
 
-            <!-- Charts Row -->
             <div class="row">
-                <!-- Financial Trends Chart -->
                 <div class="col-xl-8">
                     <div class="card">
                         <div class="card-header">
@@ -121,7 +143,6 @@
                     </div>
                 </div>
 
-                <!-- Payment Status Distribution -->
                 <div class="col-xl-4">
                     <div class="card">
                         <div class="card-header">
@@ -134,9 +155,7 @@
                 </div>
             </div>
 
-            <!-- Second Charts Row -->
             <div class="row">
-                <!-- Expense Categories -->
                 <div class="col-xl-6">
                     <div class="card">
                         <div class="card-header">
@@ -148,7 +167,6 @@
                     </div>
                 </div>
 
-                <!-- Income Sources -->
                 <div class="col-xl-6">
                     <div class="card">
                         <div class="card-header">
@@ -161,9 +179,7 @@
                 </div>
             </div>
 
-            <!-- Tables Row -->
             <div class="row">
-                <!-- Recent Transactions -->
                 <div class="col-xl-8">
                     <div class="card">
                         <div class="card-header">
@@ -171,7 +187,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-hover">
+                                <table id="recentTransactionsTable" class="table table-hover table-striped dt-responsive nowrap" style="width:100%">
                                     <thead>
                                         <tr>
                                             <th>Tanggal</th>
@@ -192,7 +208,7 @@
                                                     </span>
                                                 </td>
                                                 <td><?php echo htmlspecialchars($transaction['reference']); ?></td>
-                                                <td><?php echo htmlspecialchars(substr($transaction['description'], 0, 50)) . '...'; ?></td>
+                                                <td><?php echo htmlspecialchars(substr($transaction['description'], 0, 50)) . (strlen($transaction['description']) > 50 ? '...' : ''); ?></td>
                                                 <td>Rp <?php echo number_format($transaction['amount'], 0, ',', '.'); ?></td>
                                             </tr>
                                             <?php endforeach; ?>
@@ -208,7 +224,6 @@
                     </div>
                 </div>
 
-                <!-- Outstanding Payments -->
                 <div class="col-xl-4">
                     <div class="card">
                         <div class="card-header">
@@ -216,7 +231,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-sm">
+                                <table id="outstandingPaymentsTable" class="table table-sm table-hover table-striped dt-responsive nowrap" style="width:100%">
                                     <thead>
                                         <tr>
                                             <th>Siswa</th>
@@ -229,15 +244,15 @@
                                             <tr>
                                                 <td>
                                                     <div>
-                                                        <strong><?php echo $payment['nama_lengkap']; ?></strong><br>
-                                                        <small class="text-muted"><?php echo $payment['nis']; ?> - <?php echo $payment['nama_kelas']; ?></small>
+                                                        <strong><?php echo htmlspecialchars($payment['nama_lengkap']); ?></strong><br>
+                                                        <small class="text-muted"><?php echo htmlspecialchars($payment['nis']); ?> - <?php echo htmlspecialchars($payment['nama_kelas']); ?></small>
                                                     </div>
                                                 </td>
                                                 <td>
                                                     <span class="text-danger fw-bold">
                                                         Rp <?php echo number_format($payment['outstanding'], 0, ',', '.'); ?>
                                                     </span><br>
-                                                    <small class="text-muted"><?php echo $payment['jumlah_tagihan']; ?> tagihan</small>
+                                                    <small class="text-muted"><?php echo htmlspecialchars($payment['jumlah_tagihan']); ?> tagihan</small>
                                                 </td>
                                             </tr>
                                             <?php endforeach; ?>
@@ -254,7 +269,6 @@
                 </div>
             </div>
 
-            <!-- Student Status Chart -->
             <div class="row">
                 <div class="col-xl-6">
                     <div class="card">
@@ -267,7 +281,6 @@
                     </div>
                 </div>
 
-                <!-- Yearly Comparison -->
                 <div class="col-xl-6">
                     <div class="card">
                         <div class="card-header">
@@ -283,7 +296,6 @@
     </div>
 </div>
 
-<!-- ApexCharts CDN -->
 <script src="assets/libs/apexcharts/apexcharts.min.js"></script>
 
 <script>
@@ -295,6 +307,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var incomeSourcesData = <?php echo json_encode($income_sources, JSON_NUMERIC_CHECK); ?>;
     var studentStatusData = <?php echo json_encode($student_status, JSON_NUMERIC_CHECK); ?>;
     var yearlyComparisonData = <?php echo json_encode($yearly_comparison, JSON_NUMERIC_CHECK); ?>;
+
+    // --- Chart Initializations ---
 
     // Financial Trends Chart
     if (financialTrendsData && financialTrendsData.length > 0) {
@@ -342,6 +356,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         var financialTrendsChart = new ApexCharts(document.querySelector('#financial-trends-chart'), financialTrendsOptions);
         financialTrendsChart.render();
+    } else {
+        document.querySelector('#financial-trends-chart').innerHTML = '<p class="text-center text-muted py-3">Tidak ada data tren keuangan</p>';
     }
 
     // Payment Status Chart
@@ -362,7 +378,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var paymentStatusChart = new ApexCharts(document.querySelector('#payment-status-chart'), paymentStatusOptions);
         paymentStatusChart.render();
     } else {
-        document.querySelector('#payment-status-chart').innerHTML = '<p class="text-center text-muted">Tidak ada data pembayaran</p>';
+        document.querySelector('#payment-status-chart').innerHTML = '<p class="text-center text-muted py-3">Tidak ada data pembayaran</p>';
     }
 
     // Expense Categories Chart
@@ -395,7 +411,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var expenseCategoriesChart = new ApexCharts(document.querySelector('#expense-categories-chart'), expenseCategoriesOptions);
         expenseCategoriesChart.render();
     } else {
-        document.querySelector('#expense-categories-chart').innerHTML = '<p class="text-center text-muted">Tidak ada data pengeluaran</p>';
+        document.querySelector('#expense-categories-chart').innerHTML = '<p class="text-center text-muted py-3">Tidak ada data pengeluaran</p>';
     }
 
     // Income Sources Chart
@@ -415,7 +431,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var incomeSourcesChart = new ApexCharts(document.querySelector('#income-sources-chart'), incomeSourcesOptions);
         incomeSourcesChart.render();
     } else {
-        document.querySelector('#income-sources-chart').innerHTML = '<p class="text-center text-muted">Tidak ada data pendapatan</p>';
+        document.querySelector('#income-sources-chart').innerHTML = '<p class="text-center text-muted py-3">Tidak ada data pendapatan</p>';
     }
 
     // Student Status Chart
@@ -435,7 +451,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var studentStatusChart = new ApexCharts(document.querySelector('#student-status-chart'), studentStatusOptions);
         studentStatusChart.render();
     } else {
-        document.querySelector('#student-status-chart').innerHTML = '<p class="text-center text-muted">Tidak ada data siswa</p>';
+        document.querySelector('#student-status-chart').innerHTML = '<p class="text-center text-muted py-3">Tidak ada data siswa</p>';
     }
 
     // Yearly Comparison Chart
@@ -478,8 +494,42 @@ document.addEventListener('DOMContentLoaded', function() {
         var yearlyComparisonChart = new ApexCharts(document.querySelector('#yearly-comparison-chart'), yearlyComparisonOptions);
         yearlyComparisonChart.render();
     } else {
-        document.querySelector('#yearly-comparison-chart').innerHTML = '<p class="text-center text-muted">Tidak ada data perbandingan tahunan</p>';
+        document.querySelector('#yearly-comparison-chart').innerHTML = '<p class="text-center text-muted py-3">Tidak ada data perbandingan tahunan</p>';
     }
+
+    // --- DataTable Initializations ---
+
+    // Recent Transactions Table
+    $('#recentTransactionsTable').DataTable({
+        responsive: true,
+        order: [[0, 'desc']],
+        language: {
+            url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
+        },
+        columnDefs: [
+            { responsivePriority: 1, targets: 0 },
+            { responsivePriority: 2, targets: 4 },
+            { responsivePriority: 3, targets: 1 },
+            { responsivePriority: 4, targets: 3 },
+            { responsivePriority: 5, targets: 2 } 
+        ]
+    });
+
+    // Outstanding Payments Table
+    $('#outstandingPaymentsTable').DataTable({
+        responsive: true,
+        order: [[1, 'desc']],
+        paging: false,      
+        searching: false,    
+        info: false,        
+        language: {
+            url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
+        },
+        columnDefs: [
+            { responsivePriority: 1, targets: 0 }, 
+            { responsivePriority: 2, targets: 1 }  
+        ]
+    });
 });
 </script>
 

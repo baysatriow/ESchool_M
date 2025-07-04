@@ -31,8 +31,12 @@ if (!function_exists('asset_path_header')) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
     <!-- iziToast CSS -->
     <link href="<?php echo asset_path_header('assets/libs/izitoast/css/iziToast.min.css'); ?>" rel="stylesheet" type="text/css" />
-    
     <link href="<?php echo asset_path_header('assets/css/app.min.css'); ?>" id="app-style" rel="stylesheet" type="text/css" />
+
+    <?php if (isset($additional_css)): ?>
+    <link href="<?php echo asset_path_header('assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css'); ?>" rel="stylesheet" type="text/css" />
+    <link href="<?php echo asset_path_header('assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css'); ?>" rel="stylesheet" type="text/css" />
+    <?php endif; ?>
 </head>
 <body>
 <div id="layout-wrapper">

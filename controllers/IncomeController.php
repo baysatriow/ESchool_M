@@ -49,19 +49,8 @@ class IncomeController extends BaseController {
             'start_date' => $start_date,
             'end_date' => $end_date,
             'selected_kategori' => $kategori_id,
-            'additional_css' => [
-                'assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css',
-                'assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css',
-                'assets/libs/select2/css/select2.min.css',
-                'assets/libs/select2/css/select2-bootstrap4.min.css'
-            ],
-            'additional_js' => [
-                'assets/libs/datatables.net/js/jquery.dataTables.min.js',
-                'assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js',
-                'assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js',
-                'assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js',
-                'assets/libs/select2/js/select2.min.js'
-            ]
+            'additional_css' => 1,
+            'additional_js' => 1
         ];
         
         $this->view('income/index', $data);

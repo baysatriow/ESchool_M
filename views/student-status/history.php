@@ -215,7 +215,7 @@ $custom_js = "
             responsive: true,
             order: [[1, 'desc']], // Default order by date descending
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
+                url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
             },
             columnDefs: [
                 // Assign higher responsive priorities to columns that should be visible first

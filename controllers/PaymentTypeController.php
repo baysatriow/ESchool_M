@@ -12,16 +12,8 @@ class PaymentTypeController extends BaseController {
         $data = [
             'page_title' => 'Jenis Pembayaran',
             'payment_types' => $payment_types,
-            'additional_css' => [
-                'assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css',
-                'assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css'
-            ],
-            'additional_js' => [
-                'assets/libs/datatables.net/js/jquery.dataTables.min.js',
-                'assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js',
-                'assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js',
-                'assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js'
-            ]
+            'additional_css' => 1,
+            'additional_js' => 1
         ];
 
         $this->view('payment-types/index', $data);
@@ -39,6 +31,11 @@ class PaymentTypeController extends BaseController {
                     'keterangan' => $_POST['keterangan'] ?? ''
                 ];
                 
+                if ($paymentType->isExists($data['kode_pembayaran'])) {
+                    $this->redirect('payment-types', 'Kode Pembayaran ' . $data['kode_pembayaran'] . ' sudah ada! Silakan gunakan kode pembayaran yang berbeda.', 'error');
+                    return;
+                }
+
                 $result = $paymentType->create($data);
                 
                 if ($result) {
@@ -66,7 +63,11 @@ class PaymentTypeController extends BaseController {
                     'tipe' => $_POST['tipe'],
                     'keterangan' => $_POST['keterangan'] ?? ''
                 ];
-                
+                if ($paymentType->isExists($data['kode_pembayaran'], $_POST['id'])) {
+                    $this->redirect('payment-types', 'Kode Pembayaran ' . $data['kode_pembayaran'] . ' sudah ada! Silakan gunakan kode pembayaran yang berbeda.', 'error');
+                    return;
+                }
+
                 $result = $paymentType->update($_POST['id'], $data);
                 
                 if ($result) {

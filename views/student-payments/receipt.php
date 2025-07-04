@@ -30,17 +30,20 @@ function terbilang($angka) {
     return $terbilang;
 }
 
-// Function untuk format bulan Indonesia
 function formatBulanIndonesia($bulan, $tahun = null) {
+    $bulan_numeric = (int) trim($bulan); 
+
     $bulan_names = [
         1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
         5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
         9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
     ];
     
-    $result = $bulan_names[$bulan] ?? $bulan;
-    if ($tahun) {
-        $result .= ' ' . $tahun;
+    $result = $bulan_names[$bulan_numeric] ?? $bulan; 
+
+    if ($tahun !== null) {
+        $trimmed_tahun = trim($tahun);
+        $result .= ' ' . $trimmed_tahun;
     }
     return $result;
 }
@@ -545,7 +548,7 @@ foreach ($details as $detail) {
             <div class="print-info">
                 <small>
                     <i class="fas fa-calendar mr-1"></i>Dicetak pada: <?= date('d F Y H:i:s') ?> | 
-                    <i class="fas fa-desktop mr-1"></i>Sistem Informasi Sekolah v2.0
+                    <i class="fas fa-desktop mr-1"></i>Sistem Keuangan Sekolah v1.0
                 </small>
             </div>
         </div>
